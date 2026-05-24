@@ -2,236 +2,136 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نموذج عقد عمل إلكتروني | النصبان للحراسات الأمنية</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #1a3a5c; --primary-light: #2a5a8c; --accent: #c8a84b; --accent-light: #e8c97a; --bg: #f4f1eb; --surface: #ffffff; --border: #d8d0be; --text: #1c1c1c; --text-muted: #6b6455; --success: #2d7a4f; --danger: #c0392b; }
+        :root { --primary: #1a3a5c; --primary-light: #2a5a8c; --accent: #c8a84b; --bg: #f4f1eb; --surface: #fff; --border: #d8d0be; --text: #1c1c1c; --text-muted: #6b6455; --success: #2d7a4f; --danger: #c0392b; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; background-image: radial-gradient(ellipse at 10% 20%, rgba(200,168,75,0.08) 0%, transparent 50%), radial-gradient(ellipse at 90% 80%, rgba(26,58,92,0.06) 0%, transparent 50%); }
-        .header { background: var(--primary); color: white; padding: 0; position: relative; overflow: hidden; }
-        .header::before { content: ''; position: absolute; top: -40px; left: -40px; width: 200px; height: 200px; border-radius: 50%; background: rgba(200,168,75,0.12); }
-        .header::after { content: ''; position: absolute; bottom: -30px; right: 60px; width: 120px; height: 120px; border-radius: 50%; background: rgba(200,168,75,0.08); }
-        .header-inner { max-width: 960px; margin: 0 auto; padding: 28px 24px 24px; display: flex; align-items: center; gap: 18px; position: relative; z-index: 1; }
-        .header-logo { width: 52px; height: 52px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; box-shadow: 0 4px 16px rgba(200,168,75,0.3); }
-        .header-text h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
-        .header-text p { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 3px; }
-        .role-bar { background: var(--accent); color: var(--primary); text-align: center; padding: 12px 24px; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .role-bar button { font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 700; padding: 10px 24px; border-radius: 30px; border: 2px solid white; cursor: pointer; background: white; color: var(--primary); transition: all 0.2s; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .header { background: var(--primary); color: white; padding: 15px 20px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .role-bar { background: var(--accent); color: var(--primary); text-align: center; padding: 10px; }
+        .role-bar button { margin: 0 10px; padding: 8px 20px; border-radius: 20px; border: 2px solid white; background: white; color: var(--primary); font-weight: 700; cursor: pointer; }
         .role-bar button.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .stepper-wrap { background: var(--primary); border-top: 1px solid rgba(255,255,255,0.08); }
-        .stepper { max-width: 960px; margin: 0 auto; padding: 0 24px; display: flex; align-items: stretch; }
-        .step { flex: 1; display: flex; align-items: center; gap: 10px; padding: 14px 8px; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.25s; opacity: 0.5; white-space: nowrap; }
-        .step.active { opacity: 1; border-bottom-color: var(--accent); }
-        .step.done { opacity: 0.75; }
-        .step-num { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.12); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.25s; }
-        .step.active .step-num { background: var(--accent); color: var(--primary); }
-        .step.done .step-num { background: var(--success); }
-        .step-label { font-size: 12px; color: white; font-weight: 500; line-height: 1.3; }
-        .main { max-width: 960px; margin: 0 auto; padding: 28px 24px 60px; }
-        .page { display: none; animation: fadeSlide 0.3s ease; }
+        .main { max-width: 1000px; margin: 20px auto; padding: 0 20px 60px; }
+        .page { display: none; }
         .page.active { display: block; }
-        @keyframes fadeSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(26,58,92,0.06); }
-        .card-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--bg); display: flex; align-items: center; gap: 8px; }
-        .card-title .icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 15px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-        .span-2 { grid-column: span 2; }
-        @media(max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .span-2 { grid-column: span 1; } .stepper { overflow-x: auto; } .step-label { display: none; } }
-        .field { display: flex; flex-direction: column; gap: 6px; }
-        .field label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
-        .field label .req { color: var(--danger); margin-right: 2px; }
-        .field input, .field select, .field textarea { padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Tajawal', sans-serif; font-size: 14px; color: var(--text); background: white; transition: border-color 0.2s, box-shadow 0.2s; direction: rtl; }
-        .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(42,90,140,0.1); }
-        .field .hint { font-size: 11px; color: var(--text-muted); }
-        .file-upload { border: 2px dashed var(--border); border-radius: 10px; padding: 16px 14px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); position: relative; }
-        .file-upload:hover { border-color: var(--primary-light); background: rgba(42,90,140,0.04); }
-        .file-upload.has-file { border-color: var(--success); background: rgba(45,122,79,0.04); }
-        .file-upload input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-        .file-upload .upload-icon { font-size: 22px; margin-bottom: 6px; }
-        .file-upload .upload-label { font-size: 12px; font-weight: 600; color: var(--primary); }
-        .file-upload .upload-hint { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-        .file-upload .file-name { font-size: 12px; font-weight: 600; color: var(--success); margin-top: 4px; }
-        .salary-total { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
-        .salary-total span { font-size: 13px; opacity: 0.8; }
-        .salary-total strong { font-size: 22px; font-weight: 800; }
-        .toggle-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--bg); border-radius: 10px; border: 1.5px solid var(--border); }
-        .toggle-row label { font-size: 14px; font-weight: 600; flex: 1; }
-        .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-        .toggle input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider { position: absolute; inset: 0; background: #c8bfad; border-radius: 24px; cursor: pointer; transition: 0.25s; }
-        .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: white; top: 3px; right: 3px; transition: 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
-        .toggle input:checked+.toggle-slider { background: var(--primary); }
-        .toggle input:checked+.toggle-slider::before { right: 23px; }
-        .contract-preview { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 32px 36px; font-size: 13.5px; line-height: 2; color: var(--text); box-shadow: 0 4px 24px rgba(0,0,0,0.08); position: relative; }
-        .contract-preview::before { content: 'بسم الله الرحمن الرحيم'; display: block; text-align: center; font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid var(--accent); }
-        .contract-preview h2 { text-align: center; font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
-        .contract-preview .subtitle { text-align: center; font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
-        .contract-section { margin-bottom: 18px; }
-        .contract-section h3 { font-size: 14px; font-weight: 700; color: var(--primary); background: rgba(26,58,92,0.06); padding: 8px 14px; border-radius: 8px; border-right: 4px solid var(--accent); margin-bottom: 10px; }
-        .contract-section p { margin-bottom: 6px; }
-        .fill { color: var(--primary-light); font-weight: 700; background: rgba(42,90,140,0.08); padding: 2px 8px; border-radius: 4px; display: inline-block; }
-        .fill.empty { color: #c8a84b; background: rgba(200,168,75,0.12); }
-        .parties-box { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-        .party { background: var(--bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border); }
-        .party .party-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-        .party .party-name { font-size: 15px; font-weight: 700; color: var(--primary); }
-        .sig-section { margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .sig-box { border: 1.5px dashed var(--border); border-radius: 12px; padding: 20px; text-align: center; }
-        canvas#sigCanvas { border: 1px solid var(--border); border-radius: 10px; cursor: crosshair; touch-action: none; background: white; display: block; width: 100%; }
-        .btn-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; flex-wrap: wrap; }
-        .btn { font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700; padding: 13px 28px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; box-shadow: 0 4px 14px rgba(26,58,92,0.25); }
-        .btn-accent { background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: var(--primary); box-shadow: 0 4px 14px rgba(200,168,75,0.3); }
-        .btn-success { background: linear-gradient(135deg, var(--success), #3a9a63); color: white; }
-        .btn:disabled { opacity: 0.6; pointer-events: none; }
-        .hr-only { display: none; }
-        .emp-only { display: block; }
-        .show-hr .hr-only { display: block; }
-        .show-hr .emp-only { display: none; }
+        @media(max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+        .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; }
+        .file-upload { border: 2px dashed var(--border); border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; position: relative; }
+        .file-upload.has-file { border-color: var(--success); }
+        .file-upload input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .salary-total { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-radius: 12px; padding: 15px 20px; display: flex; justify-content: space-between; font-size: 1.2em; }
+        .contract-preview { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 30px; font-size: 14px; line-height: 2.2; max-height: 600px; overflow-y: auto; }
+        .contract-preview h2 { text-align: center; margin-bottom: 20px; }
+        .contract-preview h3 { color: var(--primary); margin: 20px 0 10px; border-right: 4px solid var(--accent); padding-right: 10px; }
+        .contract-preview .fill { background: rgba(42,90,140,0.1); padding: 2px 8px; border-radius: 4px; font-weight: 700; color: var(--primary-light); }
+        canvas { border: 1px solid var(--border); border-radius: 10px; cursor: crosshair; width: 100%; background: white; }
+        .btn { padding: 12px 28px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; background: var(--primary); color: white; font-family: inherit; }
+        .btn-accent { background: var(--accent); color: var(--primary); }
         .hidden { display: none; }
-        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.6s linear infinite; margin-left: 8px; }
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 5px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .alert { padding: 14px 18px; border-radius: 12px; font-size: 14px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-        .alert-success { background: rgba(45,122,79,0.08); color: var(--success); border: 1px solid rgba(45,122,79,0.15); }
-        .alert-warning { background: rgba(200,168,75,0.12); color: #8a6a10; border: 1px solid rgba(200,168,75,0.25); }
     </style>
 </head>
 <body>
 <div class="header">
-    <div class="header-inner">
-        <div class="header-logo">📋</div>
-        <div class="header-text"><h1>نموذج عقد العمل الإلكتروني</h1><p>النصبان للحراسات الأمنية — سير عمل رقمي متكامل</p></div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:25%"></div></div>
+    <h1>📋 نموذج عقد العمل الإلكتروني</h1>
 </div>
 <div class="role-bar" id="roleBar">
-    <span>🔄 اختر وضع العرض:</span>
+    <span>اختر وضع العرض:</span>
     <button id="btnEmp" class="active" onclick="setRole('emp')">👤 أنا موظف</button>
     <button id="btnHR" onclick="setRole('hr')">🔒 أنا موارد بشرية</button>
 </div>
-<div class="stepper-wrap"><div class="stepper">
-    <div class="step active" id="step1Tab"><div class="step-num">1</div><div class="step-label">بيانات الموظف والمرفقات</div></div>
-    <div class="step hr-only" id="step2Tab"><div class="step-num">2</div><div class="step-label">الموارد البشرية</div></div>
-    <div class="step" id="step3Tab"><div class="step-num">3</div><div class="step-label">مراجعة وتوقيع</div></div>
-    <div class="step" id="step4Tab"><div class="step-num">✓</div><div class="step-label">اكتمل العقد</div></div>
-</div></div>
-
 <div class="main">
-    <!-- STEP 1 -->
+    <!-- STEP 1: الموظف -->
     <div class="page active" id="page1">
-        <div class="alert alert-info"><span>ℹ️</span><span>املأ جميع الحقول الإجبارية وارفع المستندات. الحقول المميزة بـ <strong>*</strong> إجبارية.</span></div>
-        <div class="card"><div class="card-title"><div class="icon">👤</div>البيانات الشخصية</div>
+        <div class="card">
+            <h2>البيانات الشخصية</h2>
             <div class="grid-2">
-                <div class="field span-2"><label>الاسم الكامل <span class="req">*</span></label><input type="text" id="empName"></div>
-                <div class="field"><label>رقم الهوية <span class="req">*</span></label><input type="text" id="empId" maxlength="10"></div>
-                <div class="field"><label>الحالة الاجتماعية <span class="req">*</span></label><select id="empMarital"><option value="">اختر...</option><option>أعزب</option><option>متزوج</option></select></div>
-                <div class="field"><label>رقم الجوال <span class="req">*</span></label><input type="tel" id="empPhone"></div>
-                <div class="field"><label>بريدك الإلكتروني <span class="req">*</span></label><input type="email" id="empEmail"></div>
+                <div class="field"><label>الاسم الكامل *</label><input type="text" id="empName"></div>
+                <div class="field"><label>رقم الهوية *</label><input type="text" id="empId"></div>
+                <div class="field"><label>الحالة الاجتماعية *</label><select id="empMarital"><option value="">اختر...</option><option>أعزب</option><option>متزوج</option></select></div>
+                <div class="field"><label>رقم الجوال *</label><input type="tel" id="empPhone"></div>
+                <div class="field"><label>البريد الإلكتروني *</label><input type="email" id="empEmail"></div>
             </div>
         </div>
-        <div class="card"><div class="card-title"><div class="icon">📍</div>العنوان الوطني</div>
+        <div class="card">
+            <h2>العنوان الوطني</h2>
             <div class="grid-3">
-                <div class="field"><label>المدينة <span class="req">*</span></label><input type="text" id="empCity"></div>
+                <div class="field"><label>المدينة *</label><input type="text" id="empCity"></div>
                 <div class="field"><label>الحي</label><input type="text" id="empDistrict"></div>
                 <div class="field"><label>الشارع</label><input type="text" id="empStreet"></div>
+                <div class="field"><label>رقم المبنى</label><input type="text" id="empBuilding"></div>
+                <div class="field"><label>الرقم الفرعي</label><input type="text" id="empSub"></div>
+                <div class="field"><label>الرمز البريدي</label><input type="text" id="empPostal"></div>
             </div>
         </div>
-        <div class="card emp-only"><div class="card-title"><div class="icon">📧</div>إرسال إلى الموارد البشرية</div>
-            <div class="field"><label>البريد الإلكتروني لموظف الموارد البشرية <span class="req">*</span></label><input type="email" id="hrEmailInput" value="hr@3s-security.com"></div>
-        </div>
-        <div class="card"><div class="card-title"><div class="icon">📎</div>المستندات المطلوبة (يمكن رفع ملفات كبيرة حتى 10GB)</div>
+        <div class="card">
+            <h2>المستندات المطلوبة (حتى 10GB)</h2>
             <div class="grid-2">
-                <div class="field"><label>الشهادة الدراسية <span class="req">*</span></label><div class="file-upload" id="fu1"><input type="file" onchange="handleFile(this,'fu1','fn1')"><div class="upload-icon">📄</div><div class="upload-label">ارفع الملف</div><div class="file-name" id="fn1"></div></div></div>
-                <div class="field"><label>السيرة الذاتية <span class="req">*</span></label><div class="file-upload" id="fu2"><input type="file" onchange="handleFile(this,'fu2','fn2')"><div class="upload-icon">📝</div><div class="upload-label">ارفع الملف</div><div class="file-name" id="fn2"></div></div></div>
-                <div class="field"><label>شهادة خلو السوابق <span class="req">*</span></label><div class="file-upload" id="fu3"><input type="file" onchange="handleFile(this,'fu3','fn3')"><div class="upload-icon">✅</div><div class="upload-label">ارفع الملف</div><div class="file-name" id="fn3"></div></div></div>
-                <div class="field"><label>وثيقة العنوان الوطني <span class="req">*</span></label><div class="file-upload" id="fu4"><input type="file" onchange="handleFile(this,'fu4','fn4')"><div class="upload-icon">🏠</div><div class="upload-label">ارفع الملف</div><div class="file-name" id="fn4"></div></div></div>
-                <div class="field"><label>شهادة الآيبان البنكي <span class="req">*</span></label><div class="file-upload" id="fu5"><input type="file" onchange="handleFile(this,'fu5','fn5')"><div class="upload-icon">🏦</div><div class="upload-label">ارفع الملف</div><div class="file-name" id="fn5"></div></div></div>
-                <div class="field"><label>صورة بطاقة الأحوال <span class="req">*</span></label><div class="file-upload" id="fu6"><input type="file" onchange="handleFile(this,'fu6','fn6')"><div class="upload-icon">🪪</div><div class="upload-label">ارفع الملف</div><div class="file-name" id="fn6"></div></div></div>
-                <div class="field span-2"><label>كرت العائلة (اختياري)</label><div class="file-upload" id="fu7"><input type="file" onchange="handleFile(this,'fu7','fn7')"><div class="upload-icon">👨‍👩‍👧</div><div class="upload-label">ارفع الملف</div><div class="file-name" id="fn7"></div></div></div>
+                <div class="field"><label>الشهادة الدراسية *</label><div class="file-upload" id="fu1"><input type="file" onchange="handleFile(this,'fu1','fn1')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn1"></span></div></div>
+                <div class="field"><label>السيرة الذاتية *</label><div class="file-upload" id="fu2"><input type="file" onchange="handleFile(this,'fu2','fn2')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn2"></span></div></div>
+                <div class="field"><label>شهادة خلو السوابق *</label><div class="file-upload" id="fu3"><input type="file" onchange="handleFile(this,'fu3','fn3')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn3"></span></div></div>
+                <div class="field"><label>وثيقة العنوان الوطني *</label><div class="file-upload" id="fu4"><input type="file" onchange="handleFile(this,'fu4','fn4')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn4"></span></div></div>
+                <div class="field"><label>شهادة الآيبان البنكي *</label><div class="file-upload" id="fu5"><input type="file" onchange="handleFile(this,'fu5','fn5')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn5"></span></div></div>
+                <div class="field"><label>صورة بطاقة الأحوال *</label><div class="file-upload" id="fu6"><input type="file" onchange="handleFile(this,'fu6','fn6')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn6"></span></div></div>
             </div>
         </div>
-        <div id="empSubmitMsg" class="alert alert-success hidden"><span>✅</span><span id="empSubmitMsgText"></span></div>
-        <div id="empSubmitError" class="alert alert-warning hidden"><span>⚠️</span><span id="empSubmitErrorText"></span></div>
-        <div class="btn-row"><button class="btn btn-primary" id="btnSubmit1" onclick="submitStep1()"><span id="btnSubmit1Text">إرسال للموارد البشرية</span><span>📧</span></button></div>
+        <div><button class="btn" id="btnSubmit1" onclick="submitStep1()">إرسال إلى الموارد البشرية 📧</button></div>
+        <div id="empMsg" class="hidden" style="margin-top:15px; padding:12px; border-radius:8px;"></div>
     </div>
 
-    <!-- STEP 2 HR -->
+    <!-- STEP 2: HR -->
     <div class="page hr-only" id="page2">
-        <div class="hr-badge">🔒 للاستخدام الداخلي — الموارد البشرية فقط</div>
-        <div class="alert alert-warning"><span>⚠️</span><span>أدخل بيانات الموظف (من الإيميل) ثم أكمل بيانات الوظيفة والراتب.</span></div>
-        <div class="card"><div class="card-title"><div class="icon">👁️</div>بيانات الموظف (أدخلها يدوياً)</div>
+        <div class="card"><h2>بيانات الموظف (من الإيميل)</h2>
             <div class="grid-2">
-                <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input type="text" id="rev_name"></div>
-                <div class="field"><label>رقم الهوية <span class="req">*</span></label><input type="text" id="rev_id"></div>
-                <div class="field"><label>رقم الجوال</label><input type="text" id="rev_phone"></div>
-                <div class="field"><label>البريد الإلكتروني للموظف <span class="req">*</span></label><input type="email" id="rev_email"></div>
+                <div class="field"><label>الاسم *</label><input type="text" id="rev_name"></div>
+                <div class="field"><label>الهوية *</label><input type="text" id="rev_id"></div>
+                <div class="field"><label>الجوال</label><input type="text" id="rev_phone"></div>
+                <div class="field"><label>البريد الإلكتروني *</label><input type="email" id="rev_email"></div>
             </div>
         </div>
-        <div class="card"><div class="card-title"><div class="icon">💼</div>بيانات الوظيفة والعقد</div>
+        <div class="card"><h2>بيانات الوظيفة والعقد</h2>
             <div class="grid-2">
-                <div class="field"><label>المسمى الوظيفي <span class="req">*</span></label><select id="jobTitle"><option value="">اختر...</option><option>حارس أمن</option><option>مشرف</option><option>إداري</option></select></div>
-                <div class="field"><label>اسم المشروع <span class="req">*</span></label><input type="text" id="projectName"></div>
-                <div class="field"><label>تاريخ بداية العقد <span class="req">*</span></label><input type="date" id="startDate"></div>
-                <div class="field"><label>تاريخ نهاية العقد <span class="req">*</span></label><input type="date" id="endDate"></div>
+                <div class="field"><label>المسمى الوظيفي *</label><select id="jobTitle"><option value="">اختر...</option><option>حارس أمن</option><option>مشرف</option><option>إداري</option></select></div>
+                <div class="field"><label>اسم المشروع *</label><input type="text" id="projectName"></div>
+                <div class="field"><label>تاريخ بداية العقد *</label><input type="date" id="startDate"></div>
+                <div class="field"><label>تاريخ نهاية العقد *</label><input type="date" id="endDate"></div>
             </div>
         </div>
-        <div class="card"><div class="card-title"><div class="icon">💰</div>تفاصيل الراتب</div>
+        <div class="card"><h2>تفاصيل الراتب</h2>
             <div class="grid-3">
-                <div class="field"><label>الراتب الأساسي <span class="req">*</span></label><input type="number" id="basicSalary" oninput="calcTotal()"></div>
+                <div class="field"><label>الراتب الأساسي *</label><input type="number" id="basicSalary" oninput="calcTotal()"></div>
                 <div class="field"><label>بدل السكن</label><input type="number" id="housing" oninput="calcTotal()"></div>
                 <div class="field"><label>بدل النقل</label><input type="number" id="transport" oninput="calcTotal()"></div>
             </div>
-            <div class="salary-total"><span>الراتب الإجمالي</span><strong><span id="totalSalary">0</span> ريال</strong></div>
+            <div class="salary-total"><span>الإجمالي</span><strong><span id="totalSalary">0</span> ريال</strong></div>
         </div>
-        <div class="card"><div class="card-title"><div class="icon">⚙️</div>بند الخصم الإداري (المادة 5/14)</div>
-            <div class="toggle-row"><label>تطبيق خصم المصاريف الإدارية؟</label><div class="toggle"><input type="checkbox" id="applyDeduction" onchange="toggleDeduction()"><div class="toggle-slider"></div></div></div>
-            <div id="deductionField" style="display:none; margin-top:14px;"><div class="field"><label>قيمة الخصم (ريال)</label><input type="number" id="deductionAmount"></div></div>
-        </div>
-        <div id="hrSubmitMsg" class="alert alert-success hidden"><span>✅</span><span>تم إرسال العقد إلى <strong id="hrSentTo"></strong>.</span></div>
-        <div id="hrSubmitError" class="alert alert-warning hidden"><span>⚠️</span><span id="hrSubmitErrorText"></span></div>
-        <div class="btn-row"><button class="btn btn-accent" id="btnSubmit2" onclick="submitStep2()"><span id="btnSubmit2Text">اعتماد وإرسال العقد للموظف</span><span>📧</span></button></div>
+        <button class="btn btn-accent" id="btnSubmit2" onclick="submitStep2()">اعتماد وإرسال العقد للموظف 📧</button>
     </div>
 
-    <!-- STEP 3 -->
+    <!-- STEP 3: العقد والتوقيع -->
     <div class="page" id="page3">
-        <div class="contract-preview" id="contractBody">
-            <h2>عقد عمل لمهمة محددة - سعودي</h2>
-            <p class="subtitle">وفقاً لأحكام نظام العمل السعودي</p>
-            <div class="parties-box">
-                <div class="party"><div class="party-label">الطرف الأول</div><div class="party-name">شركة النصبان للحراسات الأمنية</div><div class="party-detail">سجل تجاري: 1010138495</div></div>
-                <div class="party"><div class="party-label">الطرف الثاني (الموظف)</div><div class="party-name fill" id="c_name">—</div><div class="party-detail">الهوية: <span class="fill" id="c_id">—</span></div></div>
-            </div>
-            <div class="contract-section"><h3>تمهيد</h3><p>حيث أن الطرف الأول منشأة تجارية تدير نشاط الحراسات الأمنية المدنية الخاصة...</p></div>
-            <div class="contract-section"><h3>ثانياً: نطاق العمل</h3><p>المهنة: <span class="fill" id="c_job">—</span> | المشروع: <span class="fill" id="c_project">—</span></p></div>
-            <div class="contract-section"><h3>ثالثاً: مدة العقد</h3><p>من <span class="fill" id="c_start">—</span> إلى <span class="fill" id="c_end">—</span></p></div>
-            <div class="contract-section"><h3>رابعاً: الأجر</h3>
-                <p>أساسي: <span class="fill" id="c_basic">—</span> ريال | سكن: <span class="fill" id="c_housing">—</span> ريال | نقل: <span class="fill" id="c_transport">—</span> ريال</p>
-                <p><strong>الإجمالي: <span class="fill" id="c_total">—</span> ريال</strong></p>
-                <div id="deductionClause" style="display:none"><p>خصم إداري: <span class="fill" id="c_deduction">—</span> ريال</p></div>
-            </div>
-            <div class="contract-section"><h3>خامساً: التزامات الطرف الثاني</h3><p>...</p></div>
-            <div class="contract-section"><h3>سادساً: انتهاء العقد أو فسخه</h3><p>...</p></div>
-            <div class="contract-section"><h3>سابعاً: مكافأة نهاية الخدمة</h3><p>...</p></div>
-            <div class="contract-section"><h3>ثامناً: أحكام عامة</h3><p>...</p></div>
-            <div class="sig-section">
-                <div class="sig-box"><div class="sig-label">توقيع الشركة</div><div class="company-sig"><div class="sig-stamp">شركة<br>النصبان</div><div class="sig-name">✓ موقّع</div></div></div>
-                <div class="sig-box"><div class="sig-label">توقيع الموظف</div><canvas id="sigCanvas" width="260" height="120"></canvas><div><button class="btn-clear" onclick="clearSig()">مسح</button></div></div>
-            </div>
+        <div class="contract-preview" id="contractContent">
+            <!-- سيتم ملؤه برمجياً -->
         </div>
-        <div id="empSignMsg" class="alert alert-success hidden"><span>✅</span><span>تم التوقيع بنجاح!</span></div>
-        <div class="btn-row"><button class="btn btn-success" onclick="submitStep3()">تأكيد التوقيع وإتمام العقد ✓</button></div>
+        <canvas id="sigCanvas" width="400" height="150"></canvas>
+        <button class="btn" onclick="clearSig()">مسح التوقيع</button>
+        <button class="btn" onclick="submitStep3()">تأكيد التوقيع وإتمام العقد ✓</button>
     </div>
 
-    <!-- STEP 4 -->
+    <!-- STEP 4: نجاح -->
     <div class="page" id="page4">
-        <div class="success-screen">
-            <div class="success-icon">✓</div><h2>تم توقيع العقد!</h2>
-            <div class="download-card hr-only"><div class="doc-icon">📄</div><div class="doc-info"><div class="doc-name">العقد النهائي - <span id="final_name"></span></div></div><button class="btn-dl" onclick="downloadContract()">تحميل</button></div>
-            <div class="download-card emp-only"><div class="doc-icon">📋</div><div class="doc-info"><div class="doc-name">ملف المهام الوظيفية</div></div><button class="btn-dl" onclick="downloadDuties()">تحميل</button></div>
-        </div>
+        <h2>✅ تم توقيع العقد وحفظه بنجاح</h2>
+        <p>سيتم إرسال نسخة PDF إلى الموارد البشرية.</p>
     </div>
 </div>
 
@@ -240,83 +140,55 @@
     const SERVICE_ID = 'service_8mp9vuv';
     const TEMPLATE_ID = 'template_4dt7x8b';
     const BASE_URL = 'https://fahad70500-tech.github.io/contract2/';
-    const state = { role: 'emp', step: 1, emp: {}, hr: {}, signed: false, employeeFiles: [] };
+    const state = { role: 'emp', step: 1, emp: {}, hr: {}, files: [] };
 
-    // معالجة رابط التوقيع المباشر
-    window.addEventListener('load', () => {
-        const params = new URLSearchParams(window.location.search);
-        const data = params.get('contract');
-        if (data) {
+    window.onload = () => {
+        const p = new URLSearchParams(location.search);
+        if (p.get('contract')) {
             try {
-                const json = JSON.parse(atob(data));
-                state.emp = json.emp;
-                state.hr = json.hr;
-                fillContract();
-                document.getElementById('page1').classList.remove('active');
-                document.getElementById('page3').classList.add('active');
+                const data = JSON.parse(atob(p.get('contract')));
+                state.emp = data.emp;
+                state.hr = data.hr;
                 state.step = 3;
+                showStep(3);
+                fillContractPreview();
                 initSig();
                 document.getElementById('roleBar').style.display = 'none';
-            } catch(e) { alert('رابط غير صالح.'); }
+            } catch(e) {}
         }
-    });
+    };
 
     function setRole(role) {
         state.role = role;
-        document.getElementById('btnEmp').classList.toggle('active', role === 'emp');
-        document.getElementById('btnHR').classList.toggle('active', role === 'hr');
-        document.body.classList.toggle('show-hr', role === 'hr');
-        if (role === 'emp' && state.step === 2) state.step = 1;
+        document.getElementById('btnEmp').classList.toggle('active', role==='emp');
+        document.getElementById('btnHR').classList.toggle('active', role==='hr');
+        document.body.classList.toggle('show-hr', role==='hr');
+        if (role==='emp' && state.step===2) state.step=1;
         showStep(state.step);
     }
 
-    const steps = [null, 'step1Tab', 'step2Tab', 'step3Tab', 'step4Tab'];
-    const pages = [null, 'page1', 'page2', 'page3', 'page4'];
-    const progress = [null, 25, 50, 75, 100];
-
     function showStep(n) {
         state.step = n;
-        pages.forEach((p, i) => { if (p) document.getElementById(p).classList.toggle('active', i === n); });
-        steps.forEach((s, i) => {
-            const el = document.getElementById(s);
-            if (el) { el.classList.remove('active', 'done'); if (i === n) el.classList.add('active'); else if (i < n) el.classList.add('done'); }
-        });
-        document.getElementById('progressFill').style.width = progress[n] + '%';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i+1 === n));
     }
 
     function handleFile(input, wrapId, nameId) {
         const wrap = document.getElementById(wrapId);
         const nameEl = document.getElementById(nameId);
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            // لا حد للحجم
-            nameEl.textContent = '✓ ' + file.name;
+        if (input.files[0]) {
+            nameEl.textContent = '✓ ' + input.files[0].name;
             wrap.classList.add('has-file');
-            const idx = state.employeeFiles.findIndex(f => f.id === nameId);
-            if (idx >= 0) state.employeeFiles[idx] = { id: nameId, file };
-            else state.employeeFiles.push({ id: nameId, file });
+            const idx = state.files.findIndex(f=>f.id===nameId);
+            if (idx>=0) state.files[idx] = {id:nameId, file:input.files[0]};
+            else state.files.push({id:nameId, file:input.files[0]});
         }
     }
 
-    function calcTotal() {
-        const b = parseFloat(document.getElementById('basicSalary').value) || 0;
-        const h = parseFloat(document.getElementById('housing').value) || 0;
-        const t = parseFloat(document.getElementById('transport').value) || 0;
-        document.getElementById('totalSalary').textContent = (b + h + t).toLocaleString('ar-SA');
-    }
-
-    function toggleDeduction() {
-        document.getElementById('deductionField').style.display = document.getElementById('applyDeduction').checked ? 'block' : 'none';
-    }
-
     async function uploadFileToTransferSh(file) {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await fetch('https://transfer.sh', { method: 'POST', body: formData });
-        if (!response.ok) throw new Error('فشل رفع ' + file.name);
-        const link = await response.text();
-        return link.trim();
+        const fd = new FormData(); fd.append('file', file);
+        const res = await fetch('https://transfer.sh', {method:'POST', body:fd});
+        if (!res.ok) throw new Error('فشل رفع '+file.name);
+        return (await res.text()).trim();
     }
 
     async function submitStep1() {
@@ -326,205 +198,169 @@
         const email = document.getElementById('empEmail').value.trim();
         const city = document.getElementById('empCity').value.trim();
         const marital = document.getElementById('empMarital').value;
-        const hrEmail = document.getElementById('hrEmailInput').value.trim();
-
-        if (!name || !id || !phone || !email || !city || !marital) { alert('يرجى تعبئة جميع الحقول الإجبارية.'); return; }
-        if (!hrEmail) { alert('أدخل بريد الموارد البشرية.'); return; }
-
-        const requiredFiles = state.employeeFiles.filter(f => ['fn1','fn2','fn3','fn4','fn5','fn6'].includes(f.id));
-        if (requiredFiles.length < 6) {
-            document.getElementById('empSubmitErrorText').textContent = 'يجب رفع جميع المستندات الإجبارية الستة.';
-            document.getElementById('empSubmitError').classList.remove('hidden');
-            return;
-        }
+        if (!name||!id||!phone||!email||!city||!marital) return alert('املأ الحقول الإجبارية');
+        const required = state.files.filter(f=>['fn1','fn2','fn3','fn4','fn5','fn6'].includes(f.id));
+        if (required.length < 6) return alert('يجب رفع جميع المستندات الستة');
 
         state.emp = { name, id, marital, phone, email, city,
             district: document.getElementById('empDistrict').value.trim(),
-            street: document.getElementById('empStreet').value.trim()
+            street: document.getElementById('empStreet').value.trim(),
+            building: document.getElementById('empBuilding').value.trim(),
+            sub: document.getElementById('empSub').value.trim(),
+            postal: document.getElementById('empPostal').value.trim()
         };
 
         const btn = document.getElementById('btnSubmit1');
-        btn.disabled = true;
-        document.getElementById('btnSubmit1Text').innerHTML = '<span class="spinner"></span> جاري رفع الملفات...';
-        document.getElementById('empSubmitMsg').classList.add('hidden');
-        document.getElementById('empSubmitError').classList.add('hidden');
-
+        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> جاري رفع الملفات...';
         let links = [];
         try {
-            for (let f of state.employeeFiles) {
-                if (f.file) {
-                    const link = await uploadFileToTransferSh(f.file);
-                    links.push(`${f.file.name}: ${link}`);
-                }
+            for (let f of state.files) {
+                if (f.file) links.push(`${f.file.name}: ${await uploadFileToTransferSh(f.file)}`);
             }
-        } catch (err) {
-            document.getElementById('empSubmitErrorText').textContent = 'فشل رفع الملفات: ' + err.message;
-            document.getElementById('empSubmitError').classList.remove('hidden');
-            btn.disabled = false;
-            document.getElementById('btnSubmit1Text').textContent = 'إرسال للموارد البشرية';
-            return;
+        } catch(e) {
+            document.getElementById('empMsg').className = 'alert alert-warning';
+            document.getElementById('empMsg').textContent = 'خطأ: '+e.message;
+            btn.disabled = false; btn.textContent = 'إرسال'; return;
         }
-
-        let message = `طلب توظيف جديد من ${name}\nالهوية: ${id}\nالحالة: ${marital}\nالجوال: ${phone}\nالإيميل: ${email}\nالمدينة: ${city}\n\nروابط المرفقات:\n`;
-        links.forEach(l => message += `- ${l}\n`);
-
-        document.getElementById('btnSubmit1Text').innerHTML = '<span class="spinner"></span> جاري إرسال الإيميل...';
+        btn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+        let msg = `طلب توظيف جديد\nالاسم: ${name}\nالهوية: ${id}\n...\nروابط المرفقات:\n${links.join('\n')}`;
         try {
             await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-                to_email: hrEmail,
+                to_email: 'fa70500maz70500@gmail.com',
                 from_name: name,
                 from_email: email,
-                subject: 'طلب توظيف جديد - ' + name,
-                message: message
+                subject: 'طلب توظيف - '+name,
+                message: msg
             });
-            document.getElementById('empSubmitMsgText').textContent = 'تم إرسال بياناتك وروابط المرفقات إلى الموارد البشرية.';
-            document.getElementById('empSubmitMsg').classList.remove('hidden');
-            document.getElementById('rev_name').value = name;
-            document.getElementById('rev_id').value = id;
-            document.getElementById('rev_phone').value = phone;
-            document.getElementById('rev_email').value = email;
-        } catch (err) {
-            document.getElementById('empSubmitErrorText').textContent = 'فشل إرسال الإيميل: ' + (err.text || err.message);
-            document.getElementById('empSubmitError').classList.remove('hidden');
-        } finally {
-            btn.disabled = false;
-            document.getElementById('btnSubmit1Text').textContent = 'إرسال للموارد البشرية';
+            document.getElementById('empMsg').className = 'alert alert-success';
+            document.getElementById('empMsg').textContent = '✅ تم الإرسال إلى الموارد البشرية';
+            // تعبئة حقول HR الحالية
+            ['rev_name','rev_id','rev_phone','rev_email'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = state.emp[id.replace('rev_','')] || '';
+            });
+        } catch(e) {
+            document.getElementById('empMsg').className = 'alert alert-warning';
+            document.getElementById('empMsg').textContent = 'فشل الإرسال';
         }
+        btn.disabled = false; btn.textContent = 'إرسال';
     }
 
-    function buildContractUrl(emp, hr) {
-        const data = { emp: emp, hr: hr };
-        const json = JSON.stringify(data);
-        const encoded = btoa(unescape(encodeURIComponent(json)));
-        return BASE_URL + '?contract=' + encoded;
+    function calcTotal() {
+        const b = +document.getElementById('basicSalary').value || 0;
+        const h = +document.getElementById('housing').value || 0;
+        const t = +document.getElementById('transport').value || 0;
+        document.getElementById('totalSalary').textContent = (b+h+t).toLocaleString('ar-SA');
     }
 
     async function submitStep2() {
         const name = document.getElementById('rev_name').value.trim();
         const id = document.getElementById('rev_id').value.trim();
         const email = document.getElementById('rev_email').value.trim();
-        const phone = document.getElementById('rev_phone').value.trim();
-        if (!name || !id || !email) { alert('املأ الاسم والهوية والبريد الإلكتروني للموظف.'); return; }
-
-        state.emp = { name, id, phone, email };
-
-        const jobTitle = document.getElementById('jobTitle').value;
+        if (!name||!id||!email) return alert('أدخل بيانات الموظف');
+        const job = document.getElementById('jobTitle').value;
         const project = document.getElementById('projectName').value.trim();
         const basic = document.getElementById('basicSalary').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        if (!jobTitle || !project || !basic || !startDate || !endDate) { alert('أكمل جميع بيانات الوظيفة.'); return; }
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        if (!job||!project||!basic||!start||!end) return alert('أكمل بيانات الوظيفة');
+        const housing = +document.getElementById('housing').value || 0;
+        const transport = +document.getElementById('transport').value || 0;
+        const total = (+basic) + housing + transport;
 
-        const housing = parseFloat(document.getElementById('housing').value) || 0;
-        const transport = parseFloat(document.getElementById('transport').value) || 0;
-        const total = parseFloat(basic) + housing + transport;
-        const applyDed = document.getElementById('applyDeduction').checked;
-        const dedAmt = document.getElementById('deductionAmount').value;
+        state.emp = { name, id, email, phone: document.getElementById('rev_phone').value };
+        state.hr = { jobTitle: job, project, basicSalary: +basic, housing, transport, total, startDate: start, endDate: end };
+        const url = BASE_URL + '?contract=' + btoa(unescape(encodeURIComponent(JSON.stringify({emp: state.emp, hr: state.hr}))));
 
-        state.hr = { jobTitle, project, basicSalary: parseFloat(basic), housing, transport, total, startDate, endDate, applyDeduction: applyDed, deductionAmount: applyDed ? dedAmt : null };
-
-        const contractUrl = buildContractUrl(state.emp, state.hr);
-        fillContract();
-
-        const btn = document.getElementById('btnSubmit2');
-        btn.disabled = true;
-        document.getElementById('btnSubmit2Text').innerHTML = '<span class="spinner"></span> جاري الإرسال...';
-        document.getElementById('hrSubmitMsg').classList.add('hidden');
-        document.getElementById('hrSubmitError').classList.add('hidden');
-
-        const message = `عزيزي ${name}،\nتم تجهيز عقد العمل الخاص بك.\nالمسمى: ${jobTitle}\nالمشروع: ${project}\nالإجمالي: ${total.toLocaleString('ar-SA')} ريال\n\nلتوقيع العقد، افتح الرابط:\n${contractUrl}`;
-
-        try {
-            await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-                to_email: email,
-                from_name: 'الموارد البشرية - شركة النصبان',
-                from_email: 'hr@3s-security.com',
-                subject: 'عقد العمل جاهز للتوقيع',
-                message: message
-            });
-            document.getElementById('hrSubmitMsg').classList.remove('hidden');
-            document.getElementById('hrSentTo').textContent = email;
-            alert('✅ تم إرسال العقد إلى ' + email + ' مع رابط التوقيع.');
-            showStep(3);
-        } catch (err) {
-            document.getElementById('hrSubmitErrorText').textContent = 'فشل إرسال الإيميل: ' + (err.text || err);
-            document.getElementById('hrSubmitError').classList.remove('hidden');
-        } finally {
-            btn.disabled = false;
-            document.getElementById('btnSubmit2Text').innerHTML = 'اعتماد وإرسال العقد للموظف <span>📧</span>';
-        }
+        await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+            to_email: email,
+            from_name: 'الموارد البشرية',
+            subject: 'عقد العمل جاهز للتوقيع',
+            message: `عزيزي ${name}،\nتم تجهيز عقد العمل.\nالرجاء التوقيع عبر الرابط:\n${url}`
+        });
+        alert('✅ تم إرسال رابط التوقيع إلى الموظف');
+        state.step = 2; showStep(3);
+        fillContractPreview();
     }
 
-    function fillContract() {
-        const e = state.emp;
-        const h = state.hr;
-        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
-        set('c_name', e.name);
-        set('c_id', e.id);
-        set('c_job', h.jobTitle);
-        set('c_project', h.project);
-        set('c_start', formatDate(h.startDate));
-        set('c_end', formatDate(h.endDate));
-        set('c_basic', h.basicSalary.toLocaleString('ar-SA'));
-        set('c_housing', h.housing.toLocaleString('ar-SA'));
-        set('c_transport', h.transport.toLocaleString('ar-SA'));
-        set('c_total', h.total.toLocaleString('ar-SA'));
-        const dedClause = document.getElementById('deductionClause');
-        if (dedClause) {
-            if (h.applyDeduction && h.deductionAmount) { dedClause.style.display = 'block'; set('c_deduction', parseFloat(h.deductionAmount).toLocaleString('ar-SA')); }
-            else { dedClause.style.display = 'none'; }
-        }
+    function fillContractPreview() {
+        const e = state.emp, h = state.hr;
+        const set = (id,val) => { const el = document.getElementById(id); if(el) el.textContent = val || '—'; };
+        // بناء العقد الكامل
+        const html = `
+            <h2>عقد عمل لمهمة محددة - سعودي</h2>
+            <p>أنه في يوم ........ بتأريخ //20م</p>
+            <p>الطرف الأول: شركة النصبان للحراسات الأمنية، سجل تجاري 1010138495، يمثلها د. عبد الرحمن النصبان.</p>
+            <p>الطرف الثاني: <span class="fill" id="c_name">${e.name}</span>، هوية <span class="fill" id="c_id">${e.id}</span>، الحالة: <span class="fill" id="c_marital">${e.marital||'—'}</span>، العنوان: ${e.city||''} ${e.district||''} ${e.street||''}، مبنى ${e.building||''}، فرعي ${e.sub||''}، رمز بريدي ${e.postal||''}، جوال ${e.phone}، بريد ${e.email}</p>
+            <h3>أولاً: التمهيد</h3><p>...</p>
+            <h3>ثانياً: نطاق العمل</h3>
+            <p>المهنة: <span class="fill">${h.jobTitle}</span> | المشروع: <span class="fill">${h.project}</span></p>
+            <h3>ثالثاً: المدة</h3>
+            <p>من <span class="fill">${formatDate(h.startDate)}</span> إلى <span class="fill">${formatDate(h.endDate)}</span></p>
+            <h3>رابعاً: الأجر</h3>
+            <p>أساسي: <span class="fill">${h.basicSalary.toLocaleString()}</span> ريال، سكن: <span class="fill">${h.housing.toLocaleString()}</span> ريال، نقل: <span class="fill">${h.transport.toLocaleString()}</span> ريال، الإجمالي: <strong>${h.total.toLocaleString()}</strong> ريال</p>
+            <!-- أضف باقي البنود (خامساً، سادساً...) بنفس النص المطلوب -->
+            <h3>خامساً: التزامات الطرف الثاني</h3>
+            <p>(5/1) ... (5/14) ...</p>
+            <h3>سادساً: انتهاء العقد</h3><p>...</p>
+            <h3>سابعاً: مكافأة نهاية الخدمة</h3><p>...</p>
+            <h3>ثامناً: أحكام عامة</h3><p>...</p>
+        `;
+        document.getElementById('contractContent').innerHTML = html;
     }
 
-    function formatDate(d) { if (!d) return '—'; const [y, m, day] = d.split('-'); const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']; return `${parseInt(day)} ${months[parseInt(m)-1]} ${y}`; }
+    function formatDate(d) {
+        if (!d) return '—';
+        const [y,m,day] = d.split('-');
+        const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+        return `${+day} ${months[+m-1]} ${y}`;
+    }
 
-    let sigCtx, sigDrawing = false, sigHasData = false;
+    // توقيع
+    let sigCtx, sigDrawing = false, hasSig = false;
     function initSig() {
-        const canvas = document.getElementById('sigCanvas');
-        if (!canvas) return;
-        canvas.width = canvas.parentElement.clientWidth - 32 || 220;
-        canvas.height = 120;
-        sigCtx = canvas.getContext('2d');
-        sigCtx.strokeStyle = '#1a3a5c'; sigCtx.lineWidth = 2.5; sigCtx.lineCap = 'round'; sigCtx.lineJoin = 'round';
-        const getPos = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            if (e.touches) return { x: (e.touches[0].clientX - rect.left) * scaleX, y: (e.touches[0].clientY - rect.top) * scaleY };
-            return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
-        };
-        canvas.addEventListener('mousedown', e => { sigDrawing = true; sigCtx.beginPath(); const p = getPos(e); sigCtx.moveTo(p.x, p.y); });
-        canvas.addEventListener('mousemove', e => { if (!sigDrawing) return; const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); sigHasData = true; });
-        canvas.addEventListener('mouseup', () => sigDrawing = false);
-        canvas.addEventListener('mouseleave', () => sigDrawing = false);
-        canvas.addEventListener('touchstart', e => { e.preventDefault(); sigDrawing = true; sigCtx.beginPath(); const p = getPos(e); sigCtx.moveTo(p.x, p.y); }, {passive: false});
-        canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!sigDrawing) return; const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); sigHasData = true; }, {passive: false});
-        canvas.addEventListener('touchend', () => sigDrawing = false);
+        const c = document.getElementById('sigCanvas');
+        c.width = c.parentElement.clientWidth - 32;
+        sigCtx = c.getContext('2d');
+        sigCtx.strokeStyle = '#1a3a5c'; sigCtx.lineWidth = 2;
+        const getPos = e => { const r = c.getBoundingClientRect(); return {x: (e.clientX-r.left)*(c.width/r.width), y: (e.clientY-r.top)*(c.height/r.height)}; };
+        c.onmousedown = e => { sigDrawing=true; sigCtx.beginPath(); const p=getPos(e); sigCtx.moveTo(p.x,p.y); };
+        c.onmousemove = e => { if(!sigDrawing) return; const p=getPos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); hasSig=true; };
+        c.onmouseup = ()=> sigDrawing=false;
+        c.addEventListener('touchstart', e=>{ e.preventDefault(); sigDrawing=true; sigCtx.beginPath(); const p=getPos(e.touches[0]); sigCtx.moveTo(p.x,p.y); });
+        c.addEventListener('touchmove', e=>{ e.preventDefault(); if(!sigDrawing) return; const p=getPos(e.touches[0]); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); hasSig=true; });
+        c.addEventListener('touchend', ()=> sigDrawing=false);
     }
-    function clearSig() { const canvas = document.getElementById('sigCanvas'); sigCtx.clearRect(0, 0, canvas.width, canvas.height); sigHasData = false; }
+    function clearSig() { const c=document.getElementById('sigCanvas'); sigCtx.clearRect(0,0,c.width,c.height); hasSig=false; }
 
     async function submitStep3() {
-        if (!sigHasData) { alert('يرجى التوقيع في المربع المخصص.'); return; }
-        document.getElementById('final_name').textContent = state.emp.name || '';
-        document.getElementById('empSignMsg').classList.remove('hidden');
-        try {
+        if (!hasSig) return alert('يرجى التوقيع');
+        // توليد PDF
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        pdf.addFont('Tajawal-Regular.ttf', 'Tajawal', 'normal');
+        pdf.setFont('Tajawal');
+        pdf.text('عقد العمل', 100, 20, {align:'center'});
+        // إضافة محتوى العقد...
+        const sigData = document.getElementById('sigCanvas').toDataURL('image/png');
+        pdf.addImage(sigData, 'PNG', 20, 200, 60, 20);
+        const pdfBlob = pdf.output('blob');
+        // إرسال PDF إلى HR
+        const reader = new FileReader();
+        reader.onload = async () => {
             await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
                 to_email: 'hr@3s-security.com',
-                from_name: state.emp.name,
-                from_email: state.emp.email || '',
-                subject: 'توقيع عقد العمل - ' + state.emp.name,
-                message: 'تم توقيع العقد من قبل الموظف.'
+                subject: 'عقد موقع - '+state.emp.name,
+                message: 'مرفق العقد الموقع',
+                attachments: [{filename: state.emp.id+'.pdf', content: reader.result.split(',')[1]}]
             });
-        } catch(e) {}
-        state.signed = true; showStep(4);
+        };
+        reader.readAsDataURL(pdfBlob);
+        // تحميل للموظف
+        pdf.save(state.emp.id+'.pdf');
+        showStep(4);
     }
 
-    function downloadContract() { alert('تحميل العقد...'); }
-    function downloadDuties() { alert('تحميل المهام...'); }
-
-    document.getElementById('startDate') && (document.getElementById('startDate').valueAsDate = new Date());
-    const nextYear = new Date(); nextYear.setFullYear(nextYear.getFullYear() + 1);
-    document.getElementById('endDate') && (document.getElementById('endDate').valueAsDate = nextYear);
     setRole('emp');
 </script>
 </body>
