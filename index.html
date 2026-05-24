@@ -1,367 +1,1063 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نموذج عقد عمل إلكتروني | النصبان للحراسات الأمنية</title>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #1a3a5c; --primary-light: #2a5a8c; --accent: #c8a84b; --bg: #f4f1eb; --surface: #fff; --border: #d8d0be; --text: #1c1c1c; --text-muted: #6b6455; --success: #2d7a4f; --danger: #c0392b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-        .header { background: var(--primary); color: white; padding: 15px 20px; display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .role-bar { background: var(--accent); color: var(--primary); text-align: center; padding: 10px; }
-        .role-bar button { margin: 0 10px; padding: 8px 20px; border-radius: 20px; border: 2px solid white; background: white; color: var(--primary); font-weight: 700; cursor: pointer; }
-        .role-bar button.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .main { max-width: 1000px; margin: 20px auto; padding: 0 20px 60px; }
-        .page { display: none; }
-        .page.active { display: block; }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-        @media(max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
-        .field { margin-bottom: 16px; }
-        .field label { display: block; font-weight: 600; margin-bottom: 6px; }
-        .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; }
-        .file-upload { border: 2px dashed var(--border); border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; position: relative; }
-        .file-upload.has-file { border-color: var(--success); }
-        .file-upload input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-        .salary-total { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-radius: 12px; padding: 15px 20px; display: flex; justify-content: space-between; font-size: 1.2em; }
-        .contract-preview { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 30px; font-size: 14px; line-height: 2.2; max-height: 600px; overflow-y: auto; }
-        .contract-preview h2 { text-align: center; margin-bottom: 20px; }
-        .contract-preview h3 { color: var(--primary); margin: 20px 0 10px; border-right: 4px solid var(--accent); padding-right: 10px; }
-        .contract-preview .fill { background: rgba(42,90,140,0.1); padding: 2px 8px; border-radius: 4px; font-weight: 700; color: var(--primary-light); }
-        canvas { border: 1px solid var(--border); border-radius: 10px; cursor: crosshair; width: 100%; background: white; }
-        .btn { padding: 12px 28px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; background: var(--primary); color: white; font-family: inherit; }
-        .btn-accent { background: var(--accent); color: var(--primary); }
-        .hidden { display: none; }
-        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 5px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نموذج عقد العمل الإلكتروني | النصبان للحراسات الأمنية</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBIQjf_WQf1QCI_5NCU5lou-8iBhDIsjt4",
+    authDomain: "contract-system-a94fb.firebaseapp.com",
+    projectId: "contract-system-a94fb",
+    storageBucket: "contract-system-a94fb.firebasestorage.app",
+    messagingSenderId: "837811421726",
+    appId: "1:837811421726:web:31ade2c706d53ef342640f",
+    measurementId: "G-SLR049GF4M"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const storage = getStorage(app);
+  const db = getFirestore(app);
+
+  window._firebase = { storage, db, ref, uploadBytesResumable, getDownloadURL, doc, setDoc, getDoc };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #2a5a8c;
+  --accent: #c8a84b;
+  --accent-light: #e8c86b;
+  --bg: #f0ede6;
+  --surface: #ffffff;
+  --border: #d8d0be;
+  --text: #1c1c1c;
+  --text-muted: #6b6455;
+  --success: #2d7a4f;
+  --danger: #c0392b;
+  --warning: #e67e22;
+  --radius: 14px;
+  --shadow: 0 4px 20px rgba(26,58,92,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white; padding: 18px 24px;
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  box-shadow: 0 4px 16px rgba(26,58,92,0.3);
+}
+.header img { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--accent); }
+.header-text h1 { font-size: 1.3em; font-weight: 800; }
+.header-text p { font-size: 0.82em; opacity: 0.8; margin-top: 2px; }
+
+/* ROLE BAR */
+.role-bar {
+  background: var(--accent);
+  padding: 10px 20px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  flex-wrap: wrap;
+}
+.role-bar span { color: var(--primary); font-weight: 700; font-size: 0.95em; }
+.role-btn {
+  padding: 8px 22px; border-radius: 30px;
+  border: 2px solid var(--primary); background: white;
+  color: var(--primary); font-weight: 700; cursor: pointer;
+  font-family: inherit; font-size: 0.9em; transition: all 0.2s;
+}
+.role-btn.active { background: var(--primary); color: white; }
+.role-btn:hover:not(.active) { background: rgba(26,58,92,0.08); }
+
+/* PROGRESS BAR */
+.progress-wrap { background: white; border-bottom: 1px solid var(--border); padding: 14px 20px; }
+.progress-steps { display: flex; align-items: center; justify-content: center; gap: 0; max-width: 600px; margin: 0 auto; }
+.step-item { display: flex; align-items: center; gap: 0; }
+.step-circle {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #e8e3d8; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.85em;
+  transition: all 0.3s; border: 2px solid #d8d0be; flex-shrink: 0;
+}
+.step-circle.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(26,58,92,0.15); }
+.step-circle.done { background: var(--success); color: white; border-color: var(--success); }
+.step-label { font-size: 0.75em; color: var(--text-muted); margin: 0 8px; white-space: nowrap; }
+.step-label.active { color: var(--primary); font-weight: 700; }
+.step-line { width: 40px; height: 2px; background: #d8d0be; }
+.step-line.done { background: var(--success); }
+@media(max-width:500px){ .step-label { display:none; } .step-line { width:20px; } }
+
+/* MAIN */
+.main { max-width: 900px; margin: 24px auto; padding: 0 16px 80px; }
+.page { display: none; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* CARD */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 1.05em; font-weight: 800; color: var(--primary);
+  margin-bottom: 18px; padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent);
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+@media(max-width:640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+/* FIELD */
+.field { margin-bottom: 4px; }
+.field label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9em; color: #2c2c2c; }
+.field label .req { color: var(--danger); margin-right: 2px; }
+.field input, .field select {
+  width: 100%; padding: 10px 13px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  font-family: inherit; font-size: 0.95em; color: var(--text);
+  background: #fafaf8; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field input:focus, .field select:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26,58,92,0.10);
+}
+.field input.invalid { border-color: var(--danger); }
+
+/* FILE UPLOAD */
+.file-upload {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 14px 10px; text-align: center; cursor: pointer;
+  position: relative; background: #fafaf8; transition: all 0.2s;
+  min-height: 64px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+}
+.file-upload:hover { border-color: var(--primary-light); background: #f0f4f8; }
+.file-upload.has-file { border-color: var(--success); background: #f0faf4; border-style: solid; }
+.file-upload.uploading { border-color: var(--accent); background: #fffbf0; }
+.file-upload input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 1.5em; }
+.upload-label { font-size: 0.82em; color: var(--text-muted); font-weight: 600; }
+.file-name { font-size: 0.78em; color: var(--success); font-weight: 700; }
+.file-progress { width: 80%; height: 4px; background: #e8e3d8; border-radius: 4px; overflow: hidden; display: none; }
+.file-progress-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
+.file-upload.uploading .file-progress { display: block; }
+
+/* SALARY */
+.salary-total {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white; border-radius: 12px; padding: 16px 22px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 1.1em; margin-top: 10px; box-shadow: 0 4px 12px rgba(26,58,92,0.2);
+}
+.salary-total strong { font-size: 1.3em; color: var(--accent-light); }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; border: none; border-radius: 12px;
+  font-weight: 700; cursor: pointer; background: var(--primary); color: white;
+  font-family: inherit; font-size: 0.95em; transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(26,58,92,0.2);
+}
+.btn:hover:not(:disabled) { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(26,58,92,0.28); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-accent { background: var(--accent); color: var(--primary); box-shadow: 0 4px 12px rgba(200,168,75,0.3); }
+.btn-accent:hover:not(:disabled) { background: var(--accent-light); }
+.btn-success { background: var(--success); box-shadow: 0 4px 12px rgba(45,122,79,0.3); }
+.btn-danger { background: var(--danger); box-shadow: 0 4px 12px rgba(192,57,43,0.3); }
+.btn-sm { padding: 8px 16px; font-size: 0.85em; border-radius: 8px; }
+.btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+
+/* ALERT */
+.alert { padding: 13px 16px; border-radius: 10px; margin-top: 14px; font-weight: 600; font-size: 0.92em; display: flex; align-items: center; gap: 8px; }
+.alert-success { background: #edf7f1; border: 1px solid #a8d8b8; color: #1e5c38; }
+.alert-danger { background: #fdf0ee; border: 1px solid #f0b8b0; color: #8b2a1e; }
+.alert-warning { background: #fef9ec; border: 1px solid #f0d898; color: #7a5a10; }
+.alert-info { background: #eef4fb; border: 1px solid #a8c8e8; color: #1a3a5c; }
+
+/* SPINNER */
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+.spinner-dark { border-color: rgba(26,58,92,0.2); border-top-color: var(--primary); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* CONTRACT PREVIEW */
+.contract-preview {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 32px; font-size: 13.5px;
+  line-height: 2.3; max-height: 560px; overflow-y: auto;
+  direction: rtl; text-align: right;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
+}
+.contract-preview h2 { text-align: center; margin-bottom: 18px; font-size: 1.2em; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+.contract-preview h3 { color: var(--primary); margin: 18px 0 8px; border-right: 4px solid var(--accent); padding-right: 10px; font-size: 1em; }
+.contract-preview .fill { background: rgba(200,168,75,0.18); padding: 1px 7px; border-radius: 4px; font-weight: 700; color: var(--primary); }
+.contract-preview p { margin-bottom: 8px; }
+.contract-preview .party-line { border-top: 1px dashed var(--border); margin: 20px 0; padding-top: 14px; text-align: center; color: var(--text-muted); font-size: 0.88em; }
+
+/* SIGNATURE */
+.sig-wrap { border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; background: white; }
+#sigCanvas { display: block; width: 100%; cursor: crosshair; touch-action: none; }
+
+/* SUCCESS PAGE */
+.success-card {
+  text-align: center; padding: 50px 30px;
+  background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.success-icon { font-size: 5em; margin-bottom: 16px; }
+.success-card h2 { color: var(--success); font-size: 1.5em; margin-bottom: 10px; }
+.success-card p { color: var(--text-muted); margin-bottom: 6px; }
+
+/* HR LINK PAGE */
+.link-card { background: white; border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); text-align: center; }
+.link-box {
+  background: #f0f4f8; border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 13px 16px;
+  font-size: 0.82em; word-break: break-all; color: var(--primary);
+  margin: 16px 0; text-align: right; direction: ltr; font-family: monospace;
+}
+.badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.78em; font-weight: 700; }
+.badge-success { background: #edf7f1; color: var(--success); }
+.badge-warning { background: #fef9ec; color: #7a5a10; }
+.badge-primary { background: #eef4fb; color: var(--primary); }
+
+/* HIDDEN */
+.hidden { display: none !important; }
+
+/* DIVIDER */
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* INFO BOX */
+.info-box { background: #eef4fb; border: 1px solid #a8c8e8; border-radius: 10px; padding: 12px 16px; font-size: 0.87em; color: #1a3a5c; margin-bottom: 16px; }
+</style>
 </head>
 <body>
+
 <div class="header">
-    <h1>📋 نموذج عقد العمل الإلكتروني</h1>
+  <div class="header-text">
+    <h1>🏢 النصبان للحراسات الأمنية</h1>
+    <p>نظام عقود العمل الإلكتروني</p>
+  </div>
 </div>
+
 <div class="role-bar" id="roleBar">
-    <span>اختر وضع العرض:</span>
-    <button id="btnEmp" class="active" onclick="setRole('emp')">👤 أنا موظف</button>
-    <button id="btnHR" onclick="setRole('hr')">🔒 أنا موارد بشرية</button>
+  <span>وضع العرض:</span>
+  <button class="role-btn active" id="btnEmp" onclick="setRole('emp')">👤 موظف</button>
+  <button class="role-btn" id="btnHR" onclick="setRole('hr')">🔒 موارد بشرية</button>
 </div>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-steps" id="progressSteps"></div>
+</div>
+
 <div class="main">
-    <!-- STEP 1: الموظف -->
-    <div class="page active" id="page1">
-        <div class="card">
-            <h2>البيانات الشخصية</h2>
-            <div class="grid-2">
-                <div class="field"><label>الاسم الكامل *</label><input type="text" id="empName"></div>
-                <div class="field"><label>رقم الهوية *</label><input type="text" id="empId"></div>
-                <div class="field"><label>الحالة الاجتماعية *</label><select id="empMarital"><option value="">اختر...</option><option>أعزب</option><option>متزوج</option></select></div>
-                <div class="field"><label>رقم الجوال *</label><input type="tel" id="empPhone"></div>
-                <div class="field"><label>البريد الإلكتروني *</label><input type="email" id="empEmail"></div>
-            </div>
+
+  <!-- ===== HR: إنشاء رابط ===== -->
+  <div class="page" id="pageHRLink">
+    <div class="link-card">
+      <div style="font-size:3em;margin-bottom:12px;">🔗</div>
+      <h2 style="color:var(--primary);margin-bottom:8px;">إرسال رابط التوظيف للموظف</h2>
+      <p style="color:var(--text-muted);margin-bottom:20px;">أدخل بريد الموظف الإلكتروني وسيصله رابط لتعبئة بياناته</p>
+      <div style="max-width:400px;margin:0 auto;">
+        <div class="field">
+          <label>البريد الإلكتروني للموظف <span class="req">*</span></label>
+          <input type="email" id="hrLinkEmail" placeholder="example@email.com">
         </div>
-        <div class="card">
-            <h2>العنوان الوطني</h2>
-            <div class="grid-3">
-                <div class="field"><label>المدينة *</label><input type="text" id="empCity"></div>
-                <div class="field"><label>الحي</label><input type="text" id="empDistrict"></div>
-                <div class="field"><label>الشارع</label><input type="text" id="empStreet"></div>
-                <div class="field"><label>رقم المبنى</label><input type="text" id="empBuilding"></div>
-                <div class="field"><label>الرقم الفرعي</label><input type="text" id="empSub"></div>
-                <div class="field"><label>الرمز البريدي</label><input type="text" id="empPostal"></div>
-            </div>
+        <div class="field" style="margin-top:12px;">
+          <label>اسم الموظف (اختياري)</label>
+          <input type="text" id="hrLinkName" placeholder="للاستخدام في الرسالة فقط">
         </div>
-        <div class="card">
-            <h2>المستندات المطلوبة (حتى 10GB)</h2>
-            <div class="grid-2">
-                <div class="field"><label>الشهادة الدراسية *</label><div class="file-upload" id="fu1"><input type="file" onchange="handleFile(this,'fu1','fn1')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn1"></span></div></div>
-                <div class="field"><label>السيرة الذاتية *</label><div class="file-upload" id="fu2"><input type="file" onchange="handleFile(this,'fu2','fn2')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn2"></span></div></div>
-                <div class="field"><label>شهادة خلو السوابق *</label><div class="file-upload" id="fu3"><input type="file" onchange="handleFile(this,'fu3','fn3')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn3"></span></div></div>
-                <div class="field"><label>وثيقة العنوان الوطني *</label><div class="file-upload" id="fu4"><input type="file" onchange="handleFile(this,'fu4','fn4')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn4"></span></div></div>
-                <div class="field"><label>شهادة الآيبان البنكي *</label><div class="file-upload" id="fu5"><input type="file" onchange="handleFile(this,'fu5','fn5')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn5"></span></div></div>
-                <div class="field"><label>صورة بطاقة الأحوال *</label><div class="file-upload" id="fu6"><input type="file" onchange="handleFile(this,'fu6','fn6')"><span class="upload-label">ارفع الملف</span><span class="file-name" id="fn6"></span></div></div>
-            </div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-accent" id="btnSendLink" onclick="sendHRLink()" style="width:100%;justify-content:center;">
+            إرسال الرابط للموظف 📧
+          </button>
         </div>
-        <div><button class="btn" id="btnSubmit1" onclick="submitStep1()">إرسال إلى الموارد البشرية 📧</button></div>
-        <div id="empMsg" class="hidden" style="margin-top:15px; padding:12px; border-radius:8px;"></div>
+        <div id="linkMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 1: الموظف يعبئ بياناته ===== -->
+  <div class="page" id="page1">
+    <div class="info-box">📋 يرجى تعبئة جميع البيانات المطلوبة ورفع المستندات، ثم إرسالها إلى الموارد البشرية.</div>
+
+    <div class="card">
+      <div class="card-title">👤 البيانات الشخصية</div>
+      <div class="grid-2">
+        <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input type="text" id="empName" placeholder="الاسم الرباعي"></div>
+        <div class="field"><label>رقم الهوية الوطنية <span class="req">*</span></label><input type="text" id="empId" placeholder="10 أرقام" maxlength="10"></div>
+        <div class="field">
+          <label>الحالة الاجتماعية <span class="req">*</span></label>
+          <select id="empMarital"><option value="">اختر...</option><option>أعزب</option><option>متزوج</option><option>مطلق</option><option>أرمل</option></select>
+        </div>
+        <div class="field"><label>رقم الجوال <span class="req">*</span></label><input type="tel" id="empPhone" placeholder="05xxxxxxxx" maxlength="10"></div>
+        <div class="field"><label>البريد الإلكتروني <span class="req">*</span></label><input type="email" id="empEmail" placeholder="example@email.com"></div>
+      </div>
     </div>
 
-    <!-- STEP 2: HR -->
-    <div class="page hr-only" id="page2">
-        <div class="card"><h2>بيانات الموظف (من الإيميل)</h2>
-            <div class="grid-2">
-                <div class="field"><label>الاسم *</label><input type="text" id="rev_name"></div>
-                <div class="field"><label>الهوية *</label><input type="text" id="rev_id"></div>
-                <div class="field"><label>الجوال</label><input type="text" id="rev_phone"></div>
-                <div class="field"><label>البريد الإلكتروني *</label><input type="email" id="rev_email"></div>
-            </div>
-        </div>
-        <div class="card"><h2>بيانات الوظيفة والعقد</h2>
-            <div class="grid-2">
-                <div class="field"><label>المسمى الوظيفي *</label><select id="jobTitle"><option value="">اختر...</option><option>حارس أمن</option><option>مشرف</option><option>إداري</option></select></div>
-                <div class="field"><label>اسم المشروع *</label><input type="text" id="projectName"></div>
-                <div class="field"><label>تاريخ بداية العقد *</label><input type="date" id="startDate"></div>
-                <div class="field"><label>تاريخ نهاية العقد *</label><input type="date" id="endDate"></div>
-            </div>
-        </div>
-        <div class="card"><h2>تفاصيل الراتب</h2>
-            <div class="grid-3">
-                <div class="field"><label>الراتب الأساسي *</label><input type="number" id="basicSalary" oninput="calcTotal()"></div>
-                <div class="field"><label>بدل السكن</label><input type="number" id="housing" oninput="calcTotal()"></div>
-                <div class="field"><label>بدل النقل</label><input type="number" id="transport" oninput="calcTotal()"></div>
-            </div>
-            <div class="salary-total"><span>الإجمالي</span><strong><span id="totalSalary">0</span> ريال</strong></div>
-        </div>
-        <button class="btn btn-accent" id="btnSubmit2" onclick="submitStep2()">اعتماد وإرسال العقد للموظف 📧</button>
+    <div class="card">
+      <div class="card-title">🏠 العنوان الوطني</div>
+      <div class="grid-3">
+        <div class="field"><label>المدينة <span class="req">*</span></label><input type="text" id="empCity"></div>
+        <div class="field"><label>الحي</label><input type="text" id="empDistrict"></div>
+        <div class="field"><label>الشارع</label><input type="text" id="empStreet"></div>
+        <div class="field"><label>رقم المبنى</label><input type="text" id="empBuilding"></div>
+        <div class="field"><label>الرقم الفرعي</label><input type="text" id="empSub"></div>
+        <div class="field"><label>الرمز البريدي</label><input type="text" id="empPostal"></div>
+      </div>
     </div>
 
-    <!-- STEP 3: العقد والتوقيع -->
-    <div class="page" id="page3">
-        <div class="contract-preview" id="contractContent">
-            <!-- سيتم ملؤه برمجياً -->
+    <div class="card">
+      <div class="card-title">📎 المستندات المطلوبة</div>
+      <div class="grid-2">
+        <div class="field"><label>الشهادة الدراسية <span class="req">*</span></label>
+          <div class="file-upload" id="fu1">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this,'fu1','fn1',0)">
+            <div class="upload-icon">📄</div>
+            <div class="upload-label">اضغط لرفع الملف</div>
+            <div class="file-name" id="fn1"></div>
+            <div class="file-progress"><div class="file-progress-bar" id="fp1"></div></div>
+          </div>
         </div>
-        <canvas id="sigCanvas" width="400" height="150"></canvas>
-        <button class="btn" onclick="clearSig()">مسح التوقيع</button>
-        <button class="btn" onclick="submitStep3()">تأكيد التوقيع وإتمام العقد ✓</button>
+        <div class="field"><label>السيرة الذاتية <span class="req">*</span></label>
+          <div class="file-upload" id="fu2">
+            <input type="file" accept=".pdf,.doc,.docx" onchange="handleFile(this,'fu2','fn2',1)">
+            <div class="upload-icon">📋</div>
+            <div class="upload-label">اضغط لرفع الملف</div>
+            <div class="file-name" id="fn2"></div>
+            <div class="file-progress"><div class="file-progress-bar" id="fp2"></div></div>
+          </div>
+        </div>
+        <div class="field"><label>شهادة خلو السوابق <span class="req">*</span></label>
+          <div class="file-upload" id="fu3">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this,'fu3','fn3',2)">
+            <div class="upload-icon">🔏</div>
+            <div class="upload-label">اضغط لرفع الملف</div>
+            <div class="file-name" id="fn3"></div>
+            <div class="file-progress"><div class="file-progress-bar" id="fp3"></div></div>
+          </div>
+        </div>
+        <div class="field"><label>وثيقة العنوان الوطني <span class="req">*</span></label>
+          <div class="file-upload" id="fu4">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this,'fu4','fn4',3)">
+            <div class="upload-icon">🏠</div>
+            <div class="upload-label">اضغط لرفع الملف</div>
+            <div class="file-name" id="fn4"></div>
+            <div class="file-progress"><div class="file-progress-bar" id="fp4"></div></div>
+          </div>
+        </div>
+        <div class="field"><label>شهادة الآيبان البنكي <span class="req">*</span></label>
+          <div class="file-upload" id="fu5">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this,'fu5','fn5',4)">
+            <div class="upload-icon">🏦</div>
+            <div class="upload-label">اضغط لرفع الملف</div>
+            <div class="file-name" id="fn5"></div>
+            <div class="file-progress"><div class="file-progress-bar" id="fp5"></div></div>
+          </div>
+        </div>
+        <div class="field"><label>صورة بطاقة الأحوال <span class="req">*</span></label>
+          <div class="file-upload" id="fu6">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this,'fu6','fn6',5)">
+            <div class="upload-icon">🪪</div>
+            <div class="upload-label">اضغط لرفع الملف</div>
+            <div class="file-name" id="fn6"></div>
+            <div class="file-progress"><div class="file-progress-bar" id="fp6"></div></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- STEP 4: نجاح -->
-    <div class="page" id="page4">
-        <h2>✅ تم توقيع العقد وحفظه بنجاح</h2>
-        <p>سيتم إرسال نسخة PDF إلى الموارد البشرية.</p>
+    <div class="btn-group">
+      <button class="btn btn-accent" id="btnSubmit1" onclick="submitStep1()">
+        إرسال إلى الموارد البشرية 📧
+      </button>
     </div>
-</div>
+    <div id="empMsg"></div>
+  </div>
+
+  <!-- ===== STEP 2: HR تكمل بيانات الوظيفة ===== -->
+  <div class="page" id="page2">
+    <div class="info-box">✅ تم استلام بيانات الموظف. يرجى إكمال بيانات الوظيفة والراتب ثم إرسال العقد للموظف للتوقيع.</div>
+
+    <div class="card">
+      <div class="card-title">👤 بيانات الموظف</div>
+      <div class="grid-2">
+        <div class="field"><label>الاسم</label><input type="text" id="rev_name" readonly style="background:#f4f1eb;"></div>
+        <div class="field"><label>رقم الهوية</label><input type="text" id="rev_id" readonly style="background:#f4f1eb;"></div>
+        <div class="field"><label>الجوال</label><input type="text" id="rev_phone" readonly style="background:#f4f1eb;"></div>
+        <div class="field"><label>البريد الإلكتروني</label><input type="email" id="rev_email" readonly style="background:#f4f1eb;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💼 بيانات الوظيفة والعقد</div>
+      <div class="grid-2">
+        <div class="field">
+          <label>المسمى الوظيفي <span class="req">*</span></label>
+          <select id="jobTitle">
+            <option value="">اختر...</option>
+            <option>حارس أمن</option>
+            <option>مشرف</option>
+            <option>إداري</option>
+            <option>قائد فريق</option>
+            <option>ضابط أمن</option>
+          </select>
+        </div>
+        <div class="field"><label>اسم المشروع <span class="req">*</span></label><input type="text" id="projectName"></div>
+        <div class="field"><label>تاريخ بداية العقد <span class="req">*</span></label><input type="date" id="startDate"></div>
+        <div class="field"><label>تاريخ نهاية العقد <span class="req">*</span></label><input type="date" id="endDate"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💰 تفاصيل الراتب</div>
+      <div class="grid-3">
+        <div class="field"><label>الراتب الأساسي <span class="req">*</span></label><input type="number" id="basicSalary" oninput="calcTotal()" placeholder="0" min="0"></div>
+        <div class="field"><label>بدل السكن</label><input type="number" id="housing" oninput="calcTotal()" placeholder="0" min="0"></div>
+        <div class="field"><label>بدل النقل</label><input type="number" id="transport" oninput="calcTotal()" placeholder="0" min="0"></div>
+      </div>
+      <div class="salary-total">
+        <span>الإجمالي الشهري</span>
+        <strong><span id="totalSalary">0</span> ريال سعودي</strong>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-accent" id="btnSubmit2" onclick="submitStep2()">
+        إرسال العقد للموظف للتوقيع 📧
+      </button>
+    </div>
+    <div id="hrMsg"></div>
+  </div>
+
+  <!-- ===== STEP 3: الموظف يراجع ويوقع ===== -->
+  <div class="page" id="page3">
+    <div class="info-box">📄 يرجى قراءة العقد بعناية ثم التوقيع في المكان المخصص أدناه.</div>
+
+    <div class="card">
+      <div class="card-title">📑 عقد العمل</div>
+      <div class="contract-preview" id="contractContent"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">✍️ التوقيع</div>
+      <p style="color:var(--text-muted);font-size:0.88em;margin-bottom:12px;">وقّع باستخدام الماوس أو الإصبع على الشاشة اللمسية</p>
+      <div class="sig-wrap">
+        <canvas id="sigCanvas" height="160"></canvas>
+      </div>
+      <div class="btn-group" style="margin-top:12px;">
+        <button class="btn btn-danger btn-sm" onclick="clearSig()">🗑️ مسح التوقيع</button>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-success" id="btnSubmit3" onclick="submitStep3()">
+        ✅ تأكيد التوقيع وإتمام العقد
+      </button>
+    </div>
+    <div id="sigMsg"></div>
+  </div>
+
+  <!-- ===== STEP 4: نجاح ===== -->
+  <div class="page" id="page4">
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <h2>تم توقيع العقد بنجاح!</h2>
+      <p style="margin-top:10px;color:var(--text-muted);">تم إرسال نسخة PDF من العقد الموقع إلى الموارد البشرية</p>
+      <p style="color:var(--text-muted);">كما تم حفظ نسخة على جهازك</p>
+      <div style="margin-top:24px;">
+        <span class="badge badge-success">✓ العقد محفوظ في النظام</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
 
 <script>
-    emailjs.init('9AjKiw5CcqmguLdFz');
-    const SERVICE_ID = 'service_8mp9vuv';
-    const TEMPLATE_ID = 'template_4dt7x8b';
-    const BASE_URL = 'https://fahad70500-tech.github.io/contract2/';
-    const state = { role: 'emp', step: 1, emp: {}, hr: {}, files: [] };
+emailjs.init('9AjKiw5CcqmguLdFz');
+const SERVICE_ID  = 'service_8mp9vuv';
+const TEMPLATE_ID = 'template_4dt7x8b';
+const BASE_URL    = 'https://fahad70500-tech.github.io/contract2/';
+const HR_EMAIL    = 'fa70500maz70500@gmail.com';
 
-    window.onload = () => {
-        const p = new URLSearchParams(location.search);
-        if (p.get('contract')) {
-            try {
-                const data = JSON.parse(atob(p.get('contract')));
-                state.emp = data.emp;
-                state.hr = data.hr;
-                state.step = 3;
-                showStep(3);
-                fillContractPreview();
-                initSig();
-                document.getElementById('roleBar').style.display = 'none';
-            } catch(e) {}
+const state = {
+  role: 'emp',
+  currentPage: 'page1',
+  emp: {},
+  hr: {},
+  fileURLs: {},      // روابط الملفات في Firebase
+  filesReady: [false,false,false,false,false,false]
+};
+
+// ============================================================
+// FIREBASE HELPERS
+// ============================================================
+function waitForFirebase() {
+  return new Promise(resolve => {
+    const check = () => { if (window._firebase) resolve(window._firebase); else setTimeout(check, 100); };
+    check();
+  });
+}
+
+async function uploadToFirebase(file, empId, slotIndex) {
+  const fb = await waitForFirebase();
+  const names = ['شهادة_دراسية','سيرة_ذاتية','خلو_سوابق','عنوان_وطني','ايبان_بنكي','بطاقة_احوال'];
+  const ext   = file.name.split('.').pop();
+  const path  = `employees/${empId}/${names[slotIndex]}.${ext}`;
+  const storageRef = fb.ref(fb.storage, path);
+  return new Promise((resolve, reject) => {
+    const task = fb.uploadBytesResumable(storageRef, file);
+    task.on('state_changed',
+      snap => {
+        const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+        const bar = document.getElementById('fp'+(slotIndex+1));
+        if (bar) bar.style.width = pct+'%';
+      },
+      reject,
+      async () => {
+        const url = await fb.getDownloadURL(task.snapshot.ref);
+        resolve(url);
+      }
+    );
+  });
+}
+
+async function saveToFirestore(empId, data) {
+  const fb = await waitForFirebase();
+  await fb.setDoc(fb.doc(fb.db, 'contracts', empId), { ...data, updatedAt: new Date().toISOString() });
+}
+
+async function loadFromFirestore(empId) {
+  const fb = await waitForFirebase();
+  const snap = await fb.getDoc(fb.doc(fb.db, 'contracts', empId));
+  return snap.exists() ? snap.data() : null;
+}
+
+// ============================================================
+// PROGRESS BAR
+// ============================================================
+const STEPS_EMP = [
+  { label: 'تعبئة البيانات', page: 'page1' },
+  { label: 'مراجعة العقد',   page: 'page3' },
+  { label: 'التوقيع',        page: 'page4' }
+];
+const STEPS_HR = [
+  { label: 'إرسال الرابط',   page: 'pageHRLink' },
+  { label: 'بيانات الوظيفة', page: 'page2' }
+];
+
+function renderProgress() {
+  const steps = state.role === 'hr' ? STEPS_HR : STEPS_EMP;
+  const cur   = state.currentPage;
+  const curIdx = steps.findIndex(s => s.page === cur);
+  const wrap  = document.getElementById('progressSteps');
+  wrap.innerHTML = steps.map((s,i) => {
+    const done   = i < curIdx;
+    const active = i === curIdx;
+    const cc = done ? 'done' : active ? 'active' : '';
+    const lc = done ? 'done' : active ? 'active' : '';
+    return `
+      <div class="step-item">
+        <div class="step-circle ${cc}">${done ? '✓' : i+1}</div>
+        <span class="step-label ${lc}">${s.label}</span>
+        ${i < steps.length-1 ? `<div class="step-line ${done?'done':''}"></div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  state.currentPage = pageId;
+  renderProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setRole(role) {
+  state.role = role;
+  document.getElementById('btnEmp').classList.toggle('active', role === 'emp');
+  document.getElementById('btnHR').classList.toggle('active',  role === 'hr');
+  if (role === 'hr') showPage('pageHRLink');
+  else               showPage('page1');
+}
+
+// ============================================================
+// FILE HANDLING
+// ============================================================
+function handleFile(input, wrapId, nameId, idx) {
+  const file = input.files[0];
+  if (!file) return;
+  const MAX = 30 * 1024 * 1024; // 30MB
+  if (file.size > MAX) { alert('حجم الملف كبير جداً (الحد الأقصى 30 ميجابايت)'); return; }
+  const wrap = document.getElementById(wrapId);
+  wrap.classList.add('uploading');
+  document.getElementById(nameId).textContent = file.name;
+  state[`file_${idx}`] = file;
+  // تحديث لون الـ wrapper بعد الاختيار
+  setTimeout(() => {
+    wrap.classList.remove('uploading');
+    wrap.classList.add('has-file');
+    state.filesReady[idx] = true;
+  }, 300);
+}
+
+// ============================================================
+// VALIDATION
+// ============================================================
+function validateId(id)    { return /^\d{10}$/.test(id); }
+function validatePhone(ph) { return /^05\d{8}$/.test(ph); }
+function validateEmail(em) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em); }
+
+function showMsg(elId, type, text) {
+  const el = document.getElementById(elId);
+  el.className = 'alert alert-'+type;
+  el.innerHTML = text;
+  el.classList.remove('hidden');
+}
+
+// ============================================================
+// STEP 1: موظف يرسل بياناته
+// ============================================================
+async function submitStep1() {
+  const name    = document.getElementById('empName').value.trim();
+  const id      = document.getElementById('empId').value.trim();
+  const marital = document.getElementById('empMarital').value;
+  const phone   = document.getElementById('empPhone').value.trim();
+  const email   = document.getElementById('empEmail').value.trim();
+  const city    = document.getElementById('empCity').value.trim();
+
+  if (!name||!id||!marital||!phone||!email||!city) return showMsg('empMsg','danger','⚠️ يرجى ملء جميع الحقول الإجبارية المشار إليها بـ (*)');
+  if (!validateId(id))    return showMsg('empMsg','danger','⚠️ رقم الهوية يجب أن يكون 10 أرقام');
+  if (!validatePhone(phone)) return showMsg('empMsg','danger','⚠️ رقم الجوال غير صحيح (يجب أن يبدأ بـ 05)');
+  if (!validateEmail(email)) return showMsg('empMsg','danger','⚠️ البريد الإلكتروني غير صحيح');
+
+  const missingFiles = state.filesReady.map((r,i) => !r ? i+1 : null).filter(Boolean);
+  if (missingFiles.length > 0) return showMsg('empMsg','danger','⚠️ يرجى رفع جميع المستندات الستة المطلوبة');
+
+  state.emp = {
+    name, id, marital, phone, email, city,
+    district: document.getElementById('empDistrict').value.trim(),
+    street:   document.getElementById('empStreet').value.trim(),
+    building: document.getElementById('empBuilding').value.trim(),
+    sub:      document.getElementById('empSub').value.trim(),
+    postal:   document.getElementById('empPostal').value.trim()
+  };
+
+  const btn = document.getElementById('btnSubmit1');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> جاري رفع الملفات...';
+  showMsg('empMsg','info','⬆️ جاري رفع الملفات إلى السيرفر...');
+
+  try {
+    // رفع الملفات لـ Firebase
+    const fileLabels = ['شهادة_دراسية','سيرة_ذاتية','خلو_سوابق','عنوان_وطني','ايبان_بنكي','بطاقة_احوال'];
+    for (let i = 0; i < 6; i++) {
+      const file = state[`file_${i}`];
+      if (file) {
+        btn.innerHTML = `<span class="spinner"></span> رفع الملف ${i+1} من 6...`;
+        const url = await uploadToFirebase(file, id, i);
+        state.fileURLs[fileLabels[i]] = url;
+      }
+    }
+
+    btn.innerHTML = '<span class="spinner"></span> جاري الحفظ والإرسال...';
+
+    // حفظ في Firestore
+    await saveToFirestore(id, { emp: state.emp, fileURLs: state.fileURLs, status: 'pending_hr' });
+
+    // إرسال إيميل للـ HR
+    const filesText = Object.entries(state.fileURLs).map(([k,v]) => `${k}: ${v}`).join('\n');
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+      to_email:   HR_EMAIL,
+      from_name:  name,
+      from_email: email,
+      subject:    `طلب توظيف جديد - ${name} (${id})`,
+      message:    `طلب توظيف جديد\n\nالاسم: ${name}\nالهوية: ${id}\nالجوال: ${phone}\nالبريد: ${email}\nالمدينة: ${city}\nالحالة: ${marital}\n\nروابط المستندات:\n${filesText}\n\nللاستكمال: ${BASE_URL}?hr=${encodeURIComponent(id)}`
+    });
+
+    showMsg('empMsg','success','✅ تم إرسال بياناتك ومستنداتك إلى الموارد البشرية بنجاح! سيتواصل معك قريباً.');
+    btn.innerHTML = '✅ تم الإرسال';
+  } catch(e) {
+    console.error(e);
+    showMsg('empMsg','danger','❌ حدث خطأ أثناء الإرسال: ' + (e.message||''));
+    btn.disabled = false;
+    btn.innerHTML = 'إرسال إلى الموارد البشرية 📧';
+  }
+}
+
+// ============================================================
+// HR: إرسال رابط للموظف
+// ============================================================
+async function sendHRLink() {
+  const email = document.getElementById('hrLinkEmail').value.trim();
+  const name  = document.getElementById('hrLinkName').value.trim();
+  if (!validateEmail(email)) return showMsg('linkMsg','danger','⚠️ يرجى إدخال بريد إلكتروني صحيح');
+
+  const btn = document.getElementById('btnSendLink');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+
+  try {
+    const link = `${BASE_URL}?mode=emp`;
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+      to_email:   email,
+      from_name:  'الموارد البشرية - النصبان للحراسات الأمنية',
+      from_email: HR_EMAIL,
+      subject:    'رابط تعبئة بيانات التوظيف',
+      message:    `عزيزي${name?' '+name:''},\n\nيسعدنا انضمامك لفريق النصبان للحراسات الأمنية.\nيرجى تعبئة بياناتك ورفع مستنداتك عبر الرابط التالي:\n\n${link}\n\nللاستفسار تواصل معنا.\n\nفريق الموارد البشرية`
+    });
+    showMsg('linkMsg','success','✅ تم إرسال الرابط بنجاح إلى: ' + email);
+    btn.innerHTML = '✅ تم الإرسال';
+  } catch(e) {
+    showMsg('linkMsg','danger','❌ فشل الإرسال: ' + (e.message||''));
+    btn.disabled = false;
+    btn.innerHTML = 'إرسال الرابط للموظف 📧';
+  }
+}
+
+// ============================================================
+// STEP 2: HR تكمل بيانات الوظيفة
+// ============================================================
+function calcTotal() {
+  const b = +document.getElementById('basicSalary').value || 0;
+  const h = +document.getElementById('housing').value    || 0;
+  const t = +document.getElementById('transport').value  || 0;
+  document.getElementById('totalSalary').textContent = (b+h+t).toLocaleString('ar-SA');
+}
+
+async function submitStep2() {
+  const name  = document.getElementById('rev_name').value.trim();
+  const id    = document.getElementById('rev_id').value.trim();
+  const email = document.getElementById('rev_email').value.trim();
+  const job   = document.getElementById('jobTitle').value;
+  const proj  = document.getElementById('projectName').value.trim();
+  const basic = document.getElementById('basicSalary').value;
+  const start = document.getElementById('startDate').value;
+  const end   = document.getElementById('endDate').value;
+
+  if (!name||!id||!email)             return showMsg('hrMsg','danger','⚠️ يرجى إكمال بيانات الموظف');
+  if (!job||!proj||!basic||!start||!end) return showMsg('hrMsg','danger','⚠️ يرجى إكمال جميع بيانات الوظيفة');
+  if (new Date(end) <= new Date(start))  return showMsg('hrMsg','danger','⚠️ تاريخ النهاية يجب أن يكون بعد تاريخ البداية');
+
+  const housing   = +document.getElementById('housing').value   || 0;
+  const transport = +document.getElementById('transport').value || 0;
+  const total     = (+basic) + housing + transport;
+
+  state.emp = { ...state.emp, name, id, email, phone: document.getElementById('rev_phone').value };
+  state.hr  = { jobTitle: job, project: proj, basicSalary: +basic, housing, transport, total, startDate: start, endDate: end };
+
+  const btn = document.getElementById('btnSubmit2');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+
+  try {
+    // حفظ في Firestore
+    await saveToFirestore(id, { emp: state.emp, hr: state.hr, status: 'pending_signature' });
+
+    // رابط التوقيع
+    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ emp: state.emp, hr: state.hr }))));
+    const signURL = `${BASE_URL}?contract=${payload}`;
+
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+      to_email:   email,
+      from_name:  'الموارد البشرية - النصبان للحراسات الأمنية',
+      from_email: HR_EMAIL,
+      subject:    `عقد العمل جاهز للتوقيع - ${name}`,
+      message:    `عزيزي ${name}،\n\nتم إعداد عقد عملك بمسمى وظيفي: ${job}\nفي مشروع: ${proj}\nالراتب الإجمالي: ${total.toLocaleString()} ريال\n\nيرجى مراجعة العقد والتوقيع عبر الرابط التالي:\n${signURL}\n\nفريق الموارد البشرية`
+    });
+
+    showMsg('hrMsg','success','✅ تم إرسال رابط التوقيع إلى بريد الموظف بنجاح!');
+    btn.innerHTML = '✅ تم الإرسال';
+
+    // عرض معاينة العقد في لوحة HR
+    showPage('page2');
+    fillContractPreview();
+
+  } catch(e) {
+    console.error(e);
+    showMsg('hrMsg','danger','❌ حدث خطأ: ' + (e.message||''));
+    btn.disabled = false;
+    btn.innerHTML = 'إرسال العقد للموظف للتوقيع 📧';
+  }
+}
+
+// ============================================================
+// CONTRACT PREVIEW
+// ============================================================
+function formatDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  return `${+day} ${months[+m-1]} ${y}م`;
+}
+
+function f(val) {
+  return `<span class="fill">${val || '—'}</span>`;
+}
+
+function fillContractPreview() {
+  const e = state.emp, h = state.hr;
+  const html = `
+<h2>عقد عمل لمهمة محددة - سعودي</h2>
+
+<p>أنه في يوم ............ بتاريخ: / /20م حرر هذا العقد بين كل من:</p>
+
+<p><strong>الطرف الأول:</strong> النصبان للحراسات الأمنية وهي شركة شخص واحد، رقم سجل تجاري (1010138495) وتاريخ 28/05/1416هـ، وعنوانها مدينة الرياض، حي النموذجية، ص.ب: 12734، ورقم هاتف (920012225)، وبريد إلكتروني info@3s-security.com ويمثلها في إبرام هذا العقد الدكتور/ عبد الرحمن بن محمد النصبان، سعودي الجنسية، رقم هوية (1014322620) بصفته المدير التنفيذي، بموجب السجل التجاري الصادر من وزارة التجارة بتاريخ 28/05/1416هـ والتي تخوله في إبرام العقود.</p>
+
+<p><strong>الطرف الثاني:</strong> ${f(e.name)}، رقم هوية ${f(e.id)}، وحالته الاجتماعية ${f(e.marital)}، العنوان الوطني: المدينة ${f(e.city)}، الحي ${f(e.district)}، الشارع ${f(e.street)}، رقم المبنى ${f(e.building)}، الرقم الفرعي ${f(e.sub)}، الرمز البريدي ${f(e.postal)}، رقم جوال ${f(e.phone)}، وبريد إلكتروني ${f(e.email)}.</p>
+
+<h3>أولاً: التمهيد</h3>
+<p>حيث أن الطرف الأول منشأة تجارية تدير نشاط الحراسات الأمنية المدنية الخاصة داخل المملكة العربية السعودية، ولكون الطرف الثاني لديه من المؤهلات والخبرات والكفاءة ما يؤهله لأداء عمل معين لمصلحة الطرف الأول وتحت إشرافه وإدارته، ولرغبة الطرف الأول في الاستفادة من خدمات الطرف الثاني وحيث أن الطرفان يتمتعان بكامل الأهلية المعتبرة شرعاً ونظاماً، فقد اتفقوا على هذا العقد.</p>
+
+<h3>ثانياً: نطاق العمل</h3>
+<p>(2/1): اتفق الطرفان على أن يعمل الطرف الثاني لدى الطرف الأول بمهنة ${f(h.jobTitle)} في مشروع ${f(h.project)} ومباشرة الأعمال التي يكلف بها بما يتناسب مع قدراته العلمية والعملية والفنية وفقاً لاحتياجات العمل.</p>
+<p>(2/2): تحدد أيام العمل العادية بستة أيام في الأسبوع وتحدد ساعات العمل بتسع ساعات يومياً يتخللها ساعة راحة.</p>
+
+<h3>ثالثاً: مدة العقد</h3>
+<p>(3/1): مدة هذا العقد سنة ميلادية، يبدأ سريانه اعتباراً من تاريخ ${f(formatDate(h.startDate))}، وينتهي بتاريخ ${f(formatDate(h.endDate))}، ولا يتجدد إلا بموجب عقد جديد، وفي حال استمر الطرفان في تنفيذه عُدَّ العقد مجدداً لمدة غير محددة.</p>
+<p>(3/2): يخضع الطرف الثاني لفترة التجربة مدتها 180 يوماً تبدأ تاريخ مباشرته للعمل، ويكون للطرفين الحق في إنهائها خلال هذه الفترة.</p>
+
+<div class="party-line">الطرف الأول — النصبان للحراسات الأمنية — التوقيع</div>
+
+<h3>رابعاً: التزامات الطرف الأول</h3>
+<p>(4/1): يلتزم الطرف الأول بأن يدفع للطرف الثاني عند نهاية كل شهر ميلادي:
+<br>أجراً أساسياً بقدر ${f(h.basicSalary?.toLocaleString('ar-SA'))} ريالاً سعودياً.
+<br>بدلاً للسكن بقدر ${f(h.housing?.toLocaleString('ar-SA'))} ريالاً سعودياً.
+<br>بدلاً للنقل بقدر ${f(h.transport?.toLocaleString('ar-SA'))} ريالاً سعودياً.
+<br><strong>الإجمالي: ${f(h.total?.toLocaleString('ar-SA'))} ريالاً سعودياً.</strong></p>
+<p>(4/2): يلتزم الطرف الأول بأن يدفع للطرف الثاني أجراً إضافياً عن ساعات العمل الإضافية يوازي أجر الساعة مضافاً إليه 50% من أجره الأساسي.</p>
+<p>(4/3): يستحق الطرف الثاني عن كل عام إجازة سنوية مدتها واحد وعشرون يوماً مدفوعة الأجر يحدد الطرف الأول تاريخها خلال سنة استحقاقها وفقاً لظروف العمل، وللطرف الأول تأجيل الإجازة بعد نهاية سنة استحقاقها لمدة لا تزيد عن تسعين يوماً.</p>
+<p>(4/4): يلتزم الطرف الأول بتوفير الرعاية الطبية للطرف الثاني بالتأمين الصحي وفقاً لأحكام نظام الضمان الصحي التعاوني ولائحته التنفيذية.</p>
+<p>(4/5): يلتزم الطرف الأول بسداد اشتراكات المؤسسة العامة للتأمينات الاجتماعية حسب أنظمتها ولوائحها.</p>
+
+<h3>خامساً: التزامات الطرف الثاني</h3>
+<p>(5/1): يلتزم الطرف الثاني بالمواظبة على الحضور والانصراف في الأوقات المحددة له من مديره المباشر، وأن ينجز العمل الموكل إليه وفقاً لأصول المهنة وتعليمات الطرف الأول.</p>
+<p>(5/2): أن يعيد إلى صاحب العمل المواد غير المستهلكة والآلات والأدوات والمعدات الموضوعة تحت تصرفه أو التي تكون في عهدته والمملوكة للطرف الأول.</p>
+<p>(5/3): يلتزم الطرف الثاني بتسليم العهد التي بيده خلال أربعة عشر يوماً بعد انتهاء العلاقة التعاقدية مع الطرف الأول.</p>
+<p>(5/4): يلتزم بإجراء الفحص الطبي التي يرغب في إجرائها عليه قبل الالتحاق بالعمل أو أثناءه بواسطة الطبيب أو الأطباء الذين يحددهم الطرف الأول.</p>
+<p>(5/5): يوافق الطرف الثاني عند حاجة الطرف الأول تكليفه بالعمل على أي مهنة أخرى تتناسب مع مؤهلاته وخبراته، ويوافق الطرف الثاني بتصويره فوتوغرافياً ونشر المحتوى المرئي لصالح الطرف الأول لأهداف دعائية.</p>
+<p>(5/6): يوافق الطرف الثاني عند حاجة الطرف الأول نقله إلى العمل في جميع مناطق ومدن المملكة العربية السعودية ولو تطلب ذلك تغيير محل إقامته.</p>
+<p>(5/7): يلتزم الطرف الثاني بدفع الرسوم أو الضرائب التي تفرضها الجهات أو الهيئات الحكومية أو الرسوم البنكية التي قد تستحق عليه.</p>
+<p>(5/8): يلتزم الطرف الثاني بتحمل أي أضرار مادية أو عينية قد تقع على الطرف الأول جراء خطأ من الطرف الثاني.</p>
+<p>(5/9): يلتزم الطرف الثاني بأن لا يعمل لحساب الغير بطريقة مباشرة أو غير مباشرة سواء بأجر أو بدون أجر، كما لا يحق له ممارسة الأعمال التجارية على اختلاف أنواعها باسمه أو باسم الغير إلا بعد الحصول على موافقة مكتوبة من الطرف الأول.</p>
+
+<div class="party-line">الطرف الأول — النصبان للحراسات الأمنية — التوقيع</div>
+
+<p>(5/10): يلتزم الطرف الثاني بعدم منافسة الطرف الأول أو العمل لدى منافس لمدة سنتين وذلك في أي مكان من المملكة العربية السعودية فيما يتعلق بعمل الحراسات الأمنية المدنية الخاصة.</p>
+<p>(5/11): يلتزم الطرف الثاني بعدم الإفصاح وإفشاء أسرار الطرف الأول بعد انتهاء عقد العمل خلال مدة سنتين.</p>
+<p>(5/12): يلتزم الطرف الثاني بعد نهاية علاقته التعاقدية مع الطرف الأول بعدم التخبيب بين الطرف الأول وعامليه.</p>
+<p>(5/13): يلتزم الطرف الثاني باستخراج صحيفة خلو السوابق ويتحمل ما يلحقها من نفقات.</p>
+<p>(5/14): يوافق الطرف الثاني على أحقية الطرف الأول بحسم مبلغ بقيمة لا تتجاوز 1500 ريال كمصاريف إدارية لإتمام إجراءات التوظيف، على أن يلتزم الطرف الأول بإعادة المبلغ المحسوم بعد انتهاء فترة التجربة.</p>
+
+<h3>سادساً: انتهاء العقد أو فسخه</h3>
+<p>(6/1): ينتهي هذا العقد أو يتفق على انتهائه، بناءً على الأحكام الواردة بالمادة الرابعة والسبعين من نظام العمل.</p>
+<p>(6/2): يفسخ هذا العقد بناءً على الأحكام الواردة بالمادة الثمانين والمادة الواحد والثمانين من نظام العمل.</p>
+<p>(6/3): إذا كان الطرف الثاني يعمل تحت أحد مشاريع الطرف الأول، فقد أدرك الطرف الثاني بأن عقد العمل مرتبط بالمشروع الذي يعمل فيه، وينتهي العقد تلقائياً بين الطرفين في حال انتهاء المشروع.</p>
+<p>(6/4): إذا كان الطرف الثاني يعمل تحت أحد مشاريع الطرف الأول، فإنه يتفق الطرفان على إنهاء العقد بشكل تلقائي وذلك إذا ورد إشعار رسمي باستبعاد الطرف الثاني منه.</p>
+<p>(6/5): اتفق الطرفان على أنه في حال فسخ العقد دون سبب مشروع: إذا كان الفسخ من قبل الطرف الأول فيلتزم بدفع (500) ريال تعويضاً، وإذا كان الفسخ من قبل الطرف الثاني فيلتزم بدفع ما يعادل أجرة شهرين.</p>
+
+<h3>سابعاً: مكافأة نهاية الخدمة</h3>
+<p>(7/1): تحتسب مكافأة نهاية الخدمة بحسب الحال، بناءً على المادة الرابعة والثمانين والمادة الخامسة والثمانين من نظام العمل.</p>
+<p>(7/2): تحتسب مكافأة نهاية الخدمة على الأجر الإجمالي وفق أحكام النظام.</p>
+
+<h3>ثامناً: أحكام عامة</h3>
+<p>(8/1): يعتبر هذا العقد ناسخاً لكافة الاتفاقيات السابقة بين الطرفين.</p>
+<p>(8/2): في حال نشوء نزاع بين الطرفين في تفسير أو تنفيذ هذا العقد فإنه يلتزم الطرفان بمدة 15 يوماً للصلح تبدأ من تاريخ إشعار أحد الطرفين الآخر كتابةً.</p>
+<p>(8/3): تتم الإخطارات والإشعارات بين الطرفين كتابةً على العنوان الموضح بصدر هذا العقد.</p>
+<p>(8/4): حُرر هذا العقد من 3 صفحات وثمانية بنود وطُبع على نسختين واستلم كل طرف نسخة.</p>
+
+<div class="party-line" style="margin-top:30px;">
+  <strong>الطرف الأول — النصبان للحراسات الأمنية</strong>
+  <br><br>التوقيع: ____________________
+  <br><br><br>
+  <strong>الطرف الثاني — ${e.name || '...'}</strong>
+  <br><br>التوقيع:
+</div>
+`;
+  document.getElementById('contractContent').innerHTML = html;
+}
+
+// ============================================================
+// SIGNATURE
+// ============================================================
+let sigCtx, sigDrawing = false, hasSig = false;
+
+function initSig() {
+  const c = document.getElementById('sigCanvas');
+  c.width = c.parentElement.clientWidth;
+  sigCtx = c.getContext('2d');
+  sigCtx.strokeStyle = '#1a3a5c';
+  sigCtx.lineWidth   = 2.5;
+  sigCtx.lineCap     = 'round';
+  sigCtx.lineJoin    = 'round';
+
+  const getPos = e => {
+    const r = c.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (c.width / r.width), y: (e.clientY - r.top) * (c.height / r.height) };
+  };
+  c.onmousedown = e => { sigDrawing = true; sigCtx.beginPath(); const p = getPos(e); sigCtx.moveTo(p.x, p.y); };
+  c.onmousemove = e => { if (!sigDrawing) return; const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); hasSig = true; };
+  c.onmouseup   = () => { sigDrawing = false; };
+  c.ontouchstart = e => { e.preventDefault(); sigDrawing = true; sigCtx.beginPath(); const p = getPos(e.touches[0]); sigCtx.moveTo(p.x, p.y); };
+  c.ontouchmove  = e => { e.preventDefault(); if (!sigDrawing) return; const p = getPos(e.touches[0]); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); hasSig = true; };
+  c.ontouchend   = () => { sigDrawing = false; };
+}
+
+function clearSig() {
+  const c = document.getElementById('sigCanvas');
+  sigCtx.clearRect(0, 0, c.width, c.height);
+  hasSig = false;
+}
+
+// ============================================================
+// STEP 3: الموظف يوقع ويرسل PDF
+// ============================================================
+async function submitStep3() {
+  if (!hasSig) return showMsg('sigMsg','danger','⚠️ يرجى التوقيع قبل الإتمام');
+
+  const btn = document.getElementById('btnSubmit3');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> جاري إنشاء PDF...';
+
+  try {
+    // توليد PDF بـ html2canvas
+    const contractEl = document.getElementById('contractContent');
+    const canvas = await html2canvas(contractEl, {
+      scale: 1.5, useCORS: true, backgroundColor: '#ffffff', scrollY: 0,
+      height: contractEl.scrollHeight, windowHeight: contractEl.scrollHeight
+    });
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W   = pdf.internal.pageSize.getWidth();
+    const H   = pdf.internal.pageSize.getHeight();
+    const imgH = (canvas.height * W) / canvas.width;
+    let yPos = 0;
+    const pageH = H - 20;
+
+    // تقسيم الصفحات
+    while (yPos < imgH) {
+      if (yPos > 0) pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, -(yPos), W, imgH);
+      yPos += pageH;
+    }
+
+    // إضافة التوقيع
+    const sigData = document.getElementById('sigCanvas').toDataURL('image/png');
+    pdf.addPage();
+    pdf.setFontSize(14);
+    pdf.text('توقيع الطرف الثاني', W/2, 20, { align: 'center' });
+    pdf.addImage(sigData, 'PNG', W/2 - 40, 30, 80, 30);
+    pdf.setFontSize(10);
+    pdf.text(`تاريخ التوقيع: ${new Date().toLocaleDateString('ar-SA')}`, W/2, 75, { align: 'center' });
+
+    const empId   = state.emp.id || 'employee';
+    const pdfBlob = pdf.output('blob');
+
+    btn.innerHTML = '<span class="spinner"></span> جاري الحفظ...';
+
+    // رفع PDF لـ Firebase
+    const fb = await waitForFirebase();
+    const pdfRef = fb.ref(fb.storage, `signed_contracts/${empId}.pdf`);
+    await new Promise((resolve, reject) => {
+      const task = fb.uploadBytesResumable(pdfRef, pdfBlob);
+      task.on('state_changed', null, reject, resolve);
+    });
+    const pdfURL = await fb.getDownloadURL(pdfRef);
+
+    // تحديث حالة في Firestore
+    await saveToFirestore(empId, { emp: state.emp, hr: state.hr, status: 'signed', pdfURL, signedAt: new Date().toISOString() });
+
+    btn.innerHTML = '<span class="spinner"></span> جاري إرسال الإيميل...';
+
+    // إرسال إيميل للـ HR
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+      to_email:   HR_EMAIL,
+      from_name:  state.emp.name,
+      from_email: state.emp.email,
+      subject:    `عقد موقع - ${state.emp.name} (${empId})`,
+      message:    `تم توقيع العقد من قبل الموظف:\nالاسم: ${state.emp.name}\nالهوية: ${empId}\n\nرابط العقد الموقع:\n${pdfURL}`
+    });
+
+    // تحميل للموظف
+    pdf.save(empId + '.pdf');
+
+    showPage('page4');
+
+  } catch(e) {
+    console.error(e);
+    showMsg('sigMsg','danger','❌ حدث خطأ: ' + (e.message||''));
+    btn.disabled = false;
+    btn.innerHTML = '✅ تأكيد التوقيع وإتمام العقد';
+  }
+}
+
+// ============================================================
+// URL PARAMS: فتح الصفحة المناسبة
+// ============================================================
+window.onload = () => {
+  const p = new URLSearchParams(location.search);
+
+  if (p.get('contract')) {
+    // الموظف جاء من رابط التوقيع
+    try {
+      const data = JSON.parse(atob(p.get('contract')));
+      state.emp  = data.emp;
+      state.hr   = data.hr;
+      document.getElementById('roleBar').classList.add('hidden');
+      document.getElementById('progressWrap').classList.add('hidden');
+      showPage('page3');
+      fillContractPreview();
+      setTimeout(initSig, 200);
+    } catch(e) { console.error(e); }
+
+  } else if (p.get('hr')) {
+    // HR يكمل بيانات موظف معين
+    const empId = p.get('hr');
+    (async () => {
+      try {
+        const data = await loadFromFirestore(empId);
+        if (data?.emp) {
+          state.emp = data.emp;
+          state.fileURLs = data.fileURLs || {};
+          document.getElementById('rev_name').value  = data.emp.name  || '';
+          document.getElementById('rev_id').value    = data.emp.id    || '';
+          document.getElementById('rev_phone').value = data.emp.phone || '';
+          document.getElementById('rev_email').value = data.emp.email || '';
+          setRole('hr');
+          showPage('page2');
         }
-    };
+      } catch(e) { console.error(e); }
+    })();
 
-    function setRole(role) {
-        state.role = role;
-        document.getElementById('btnEmp').classList.toggle('active', role==='emp');
-        document.getElementById('btnHR').classList.toggle('active', role==='hr');
-        document.body.classList.toggle('show-hr', role==='hr');
-        if (role==='emp' && state.step===2) state.step=1;
-        showStep(state.step);
-    }
-
-    function showStep(n) {
-        state.step = n;
-        document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i+1 === n));
-    }
-
-    function handleFile(input, wrapId, nameId) {
-        const wrap = document.getElementById(wrapId);
-        const nameEl = document.getElementById(nameId);
-        if (input.files[0]) {
-            nameEl.textContent = '✓ ' + input.files[0].name;
-            wrap.classList.add('has-file');
-            const idx = state.files.findIndex(f=>f.id===nameId);
-            if (idx>=0) state.files[idx] = {id:nameId, file:input.files[0]};
-            else state.files.push({id:nameId, file:input.files[0]});
-        }
-    }
-
-    async function uploadFileToTransferSh(file) {
-        const fd = new FormData(); fd.append('file', file);
-        const res = await fetch('https://transfer.sh', {method:'POST', body:fd});
-        if (!res.ok) throw new Error('فشل رفع '+file.name);
-        return (await res.text()).trim();
-    }
-
-    async function submitStep1() {
-        const name = document.getElementById('empName').value.trim();
-        const id = document.getElementById('empId').value.trim();
-        const phone = document.getElementById('empPhone').value.trim();
-        const email = document.getElementById('empEmail').value.trim();
-        const city = document.getElementById('empCity').value.trim();
-        const marital = document.getElementById('empMarital').value;
-        if (!name||!id||!phone||!email||!city||!marital) return alert('املأ الحقول الإجبارية');
-        const required = state.files.filter(f=>['fn1','fn2','fn3','fn4','fn5','fn6'].includes(f.id));
-        if (required.length < 6) return alert('يجب رفع جميع المستندات الستة');
-
-        state.emp = { name, id, marital, phone, email, city,
-            district: document.getElementById('empDistrict').value.trim(),
-            street: document.getElementById('empStreet').value.trim(),
-            building: document.getElementById('empBuilding').value.trim(),
-            sub: document.getElementById('empSub').value.trim(),
-            postal: document.getElementById('empPostal').value.trim()
-        };
-
-        const btn = document.getElementById('btnSubmit1');
-        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> جاري رفع الملفات...';
-        let links = [];
-        try {
-            for (let f of state.files) {
-                if (f.file) links.push(`${f.file.name}: ${await uploadFileToTransferSh(f.file)}`);
-            }
-        } catch(e) {
-            document.getElementById('empMsg').className = 'alert alert-warning';
-            document.getElementById('empMsg').textContent = 'خطأ: '+e.message;
-            btn.disabled = false; btn.textContent = 'إرسال'; return;
-        }
-        btn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
-        let msg = `طلب توظيف جديد\nالاسم: ${name}\nالهوية: ${id}\n...\nروابط المرفقات:\n${links.join('\n')}`;
-        try {
-            await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-                to_email: 'fa70500maz70500@gmail.com',
-                from_name: name,
-                from_email: email,
-                subject: 'طلب توظيف - '+name,
-                message: msg
-            });
-            document.getElementById('empMsg').className = 'alert alert-success';
-            document.getElementById('empMsg').textContent = '✅ تم الإرسال إلى الموارد البشرية';
-            // تعبئة حقول HR الحالية
-            ['rev_name','rev_id','rev_phone','rev_email'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = state.emp[id.replace('rev_','')] || '';
-            });
-        } catch(e) {
-            document.getElementById('empMsg').className = 'alert alert-warning';
-            document.getElementById('empMsg').textContent = 'فشل الإرسال';
-        }
-        btn.disabled = false; btn.textContent = 'إرسال';
-    }
-
-    function calcTotal() {
-        const b = +document.getElementById('basicSalary').value || 0;
-        const h = +document.getElementById('housing').value || 0;
-        const t = +document.getElementById('transport').value || 0;
-        document.getElementById('totalSalary').textContent = (b+h+t).toLocaleString('ar-SA');
-    }
-
-    async function submitStep2() {
-        const name = document.getElementById('rev_name').value.trim();
-        const id = document.getElementById('rev_id').value.trim();
-        const email = document.getElementById('rev_email').value.trim();
-        if (!name||!id||!email) return alert('أدخل بيانات الموظف');
-        const job = document.getElementById('jobTitle').value;
-        const project = document.getElementById('projectName').value.trim();
-        const basic = document.getElementById('basicSalary').value;
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-        if (!job||!project||!basic||!start||!end) return alert('أكمل بيانات الوظيفة');
-        const housing = +document.getElementById('housing').value || 0;
-        const transport = +document.getElementById('transport').value || 0;
-        const total = (+basic) + housing + transport;
-
-        state.emp = { name, id, email, phone: document.getElementById('rev_phone').value };
-        state.hr = { jobTitle: job, project, basicSalary: +basic, housing, transport, total, startDate: start, endDate: end };
-        const url = BASE_URL + '?contract=' + btoa(unescape(encodeURIComponent(JSON.stringify({emp: state.emp, hr: state.hr}))));
-
-        await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-            to_email: email,
-            from_name: 'الموارد البشرية',
-            subject: 'عقد العمل جاهز للتوقيع',
-            message: `عزيزي ${name}،\nتم تجهيز عقد العمل.\nالرجاء التوقيع عبر الرابط:\n${url}`
-        });
-        alert('✅ تم إرسال رابط التوقيع إلى الموظف');
-        state.step = 2; showStep(3);
-        fillContractPreview();
-    }
-
-    function fillContractPreview() {
-        const e = state.emp, h = state.hr;
-        const set = (id,val) => { const el = document.getElementById(id); if(el) el.textContent = val || '—'; };
-        // بناء العقد الكامل
-        const html = `
-            <h2>عقد عمل لمهمة محددة - سعودي</h2>
-            <p>أنه في يوم ........ بتأريخ //20م</p>
-            <p>الطرف الأول: شركة النصبان للحراسات الأمنية، سجل تجاري 1010138495، يمثلها د. عبد الرحمن النصبان.</p>
-            <p>الطرف الثاني: <span class="fill" id="c_name">${e.name}</span>، هوية <span class="fill" id="c_id">${e.id}</span>، الحالة: <span class="fill" id="c_marital">${e.marital||'—'}</span>، العنوان: ${e.city||''} ${e.district||''} ${e.street||''}، مبنى ${e.building||''}، فرعي ${e.sub||''}، رمز بريدي ${e.postal||''}، جوال ${e.phone}، بريد ${e.email}</p>
-            <h3>أولاً: التمهيد</h3><p>...</p>
-            <h3>ثانياً: نطاق العمل</h3>
-            <p>المهنة: <span class="fill">${h.jobTitle}</span> | المشروع: <span class="fill">${h.project}</span></p>
-            <h3>ثالثاً: المدة</h3>
-            <p>من <span class="fill">${formatDate(h.startDate)}</span> إلى <span class="fill">${formatDate(h.endDate)}</span></p>
-            <h3>رابعاً: الأجر</h3>
-            <p>أساسي: <span class="fill">${h.basicSalary.toLocaleString()}</span> ريال، سكن: <span class="fill">${h.housing.toLocaleString()}</span> ريال، نقل: <span class="fill">${h.transport.toLocaleString()}</span> ريال، الإجمالي: <strong>${h.total.toLocaleString()}</strong> ريال</p>
-            <!-- أضف باقي البنود (خامساً، سادساً...) بنفس النص المطلوب -->
-            <h3>خامساً: التزامات الطرف الثاني</h3>
-            <p>(5/1) ... (5/14) ...</p>
-            <h3>سادساً: انتهاء العقد</h3><p>...</p>
-            <h3>سابعاً: مكافأة نهاية الخدمة</h3><p>...</p>
-            <h3>ثامناً: أحكام عامة</h3><p>...</p>
-        `;
-        document.getElementById('contractContent').innerHTML = html;
-    }
-
-    function formatDate(d) {
-        if (!d) return '—';
-        const [y,m,day] = d.split('-');
-        const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-        return `${+day} ${months[+m-1]} ${y}`;
-    }
-
-    // توقيع
-    let sigCtx, sigDrawing = false, hasSig = false;
-    function initSig() {
-        const c = document.getElementById('sigCanvas');
-        c.width = c.parentElement.clientWidth - 32;
-        sigCtx = c.getContext('2d');
-        sigCtx.strokeStyle = '#1a3a5c'; sigCtx.lineWidth = 2;
-        const getPos = e => { const r = c.getBoundingClientRect(); return {x: (e.clientX-r.left)*(c.width/r.width), y: (e.clientY-r.top)*(c.height/r.height)}; };
-        c.onmousedown = e => { sigDrawing=true; sigCtx.beginPath(); const p=getPos(e); sigCtx.moveTo(p.x,p.y); };
-        c.onmousemove = e => { if(!sigDrawing) return; const p=getPos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); hasSig=true; };
-        c.onmouseup = ()=> sigDrawing=false;
-        c.addEventListener('touchstart', e=>{ e.preventDefault(); sigDrawing=true; sigCtx.beginPath(); const p=getPos(e.touches[0]); sigCtx.moveTo(p.x,p.y); });
-        c.addEventListener('touchmove', e=>{ e.preventDefault(); if(!sigDrawing) return; const p=getPos(e.touches[0]); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); hasSig=true; });
-        c.addEventListener('touchend', ()=> sigDrawing=false);
-    }
-    function clearSig() { const c=document.getElementById('sigCanvas'); sigCtx.clearRect(0,0,c.width,c.height); hasSig=false; }
-
-    async function submitStep3() {
-        if (!hasSig) return alert('يرجى التوقيع');
-        // توليد PDF
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF();
-        pdf.addFont('Tajawal-Regular.ttf', 'Tajawal', 'normal');
-        pdf.setFont('Tajawal');
-        pdf.text('عقد العمل', 100, 20, {align:'center'});
-        // إضافة محتوى العقد...
-        const sigData = document.getElementById('sigCanvas').toDataURL('image/png');
-        pdf.addImage(sigData, 'PNG', 20, 200, 60, 20);
-        const pdfBlob = pdf.output('blob');
-        // إرسال PDF إلى HR
-        const reader = new FileReader();
-        reader.onload = async () => {
-            await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-                to_email: 'hr@3s-security.com',
-                subject: 'عقد موقع - '+state.emp.name,
-                message: 'مرفق العقد الموقع',
-                attachments: [{filename: state.emp.id+'.pdf', content: reader.result.split(',')[1]}]
-            });
-        };
-        reader.readAsDataURL(pdfBlob);
-        // تحميل للموظف
-        pdf.save(state.emp.id+'.pdf');
-        showStep(4);
-    }
-
+  } else if (p.get('mode') === 'emp') {
+    // موظف جاء من رابط HR
     setRole('emp');
+    showPage('page1');
+    document.getElementById('roleBar').classList.add('hidden');
+
+  } else {
+    setRole('emp');
+  }
+
+  renderProgress();
+};
 </script>
 </body>
 </html>
